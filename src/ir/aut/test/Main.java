@@ -2,10 +2,18 @@ package ir.aut.test;
 
 import ir.aut.test.testProgram.ClientThread;
 import ir.aut.test.testProgram.ServerThread;
+import ir.aut.test.view.GameJFrame;
+
+import javax.swing.*;
 
 public class Main {
 
     public static void main(String[] args) {
+        GameJFrame gameJFrame = new GameJFrame();
+        gameJFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+    }
+
+    private static void testNetwork() {
         int port = 5226;
         ServerThread serverThread = new ServerThread(port);
         ClientThread clientThread = new ClientThread(port);
@@ -16,11 +24,6 @@ public class Main {
             e.printStackTrace();
         }
         serverThread.start();
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
         serverThread.sentMessage("amirPHL", "123654");
         clientThread.sendMessage("mohsenPHL", "987456");
         try {
