@@ -11,6 +11,7 @@ import static ir.aut.test.view.Constants.*;
 public class GameJPanel extends JPanel {
     private MySquare[][] mySquares;
     private String sentence;
+    private MenuJPanel menuJPanel;
 
     public GameJPanel(MySquare[][] mySquares, String sentence) {
         this(mySquares);
@@ -20,15 +21,19 @@ public class GameJPanel extends JPanel {
     public GameJPanel(MySquare[][] mySquares) {
         this.mySquares = mySquares;
         this.sentence = " ";
+        setLayout(null);
+        menuJPanel = new MenuJPanel();
+        add(menuJPanel);
         setBorder(BorderFactory.createLineBorder(Color.BLACK));
-        setBounds(100, 100, 900, 600);
+        setSize(new Dimension(WIDTH_OF_GAMEJPANEL, HEIGHT_OF_GAMEJPANEL));
+        setBounds(0, 0, WIDTH_OF_GAMEJPANEL, HEIGHT_OF_GAMEJPANEL);
         setOpaque(true);
     }
 
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         g.setFont(TEXT_FONT);
-        g.drawString(sentence, S_X, S_Y / 2);
+        g.drawString(sentence, S_X, S_Y - 15);
         for (int i = 0; i < LEN; i++) {
             for (int j = 0; j < LEN; j++) {
                 g.setColor(mySquares[i][j].getBgColor());

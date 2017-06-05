@@ -8,21 +8,21 @@ import static ir.aut.test.view.Constants.*;
 /**
  * Created by Yana on 05/06/2017.
  */
-public class GameJFrame extends JFrame {
+public class Frame extends JFrame {
     private GameJPanel gameJPanel;
+    private ChatJPanel chatJPanel;
+    private ShipsJPanel shipsJPanel;
     private MySquare[][] mySquares;
     private Container container;
     private MenuJPanel menuJPanel;
 
-    public GameJFrame() {
+    public Frame() {
         super("Battle Ship");
         setLayout(null);
-        setSize(new Dimension(1200, 900));
+        setSize(new Dimension(WIDTH_OF_FRAME, HEIGHT_OF_FRAME));
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setResizable(false);
         container = getContentPane();
-        menuJPanel = new MenuJPanel();
-        add(menuJPanel);
         mySquares = new MySquare[10][10];
         for (int i = 0; i < mySquares[0].length; i++) {
             for (int j = 0; j < mySquares.length; j++) {
@@ -31,8 +31,12 @@ public class GameJFrame extends JFrame {
         }
 
         gameJPanel = new GameJPanel(mySquares, "Alis turn");
+        chatJPanel = new ChatJPanel();
+        shipsJPanel = new ShipsJPanel(true);
         setSize(1200, 900);
         getContentPane().add(gameJPanel/*, BorderLayout.CENTER*/);
+        getContentPane().add(chatJPanel);
+        getContentPane().add(shipsJPanel);
         setVisible(true);
         revalidate();
     }
