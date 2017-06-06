@@ -14,6 +14,7 @@ import static ir.aut.test.view.Constants.*;
  * Created by Yana on 05/06/2017.
  */
 public class ShipsJPanel extends JPanel {
+    private UI1 ui1;
     private JButton resetButton;
     private JButton readyButton;
     private JButton leaveButton;
@@ -29,9 +30,16 @@ public class ShipsJPanel extends JPanel {
     private JButton mediumSquareButton;
     private JButton bigSquareButton;
     private JButton largeSquareButton;
+    private int direction = HARIZONTAL;
+    private int position = 1;
+    private int ssb = 4;
+    private int msb = 3;
+    private int bsb = 2;
+    private int lsb = 1;
 
-    public ShipsJPanel(boolean isEditing) {
+    public ShipsJPanel(boolean isEditing, UI1 ui1) {
         this.isEditing = isEditing;
+        this.ui1 = ui1;
         setLayout(null);
         setBorder(BorderFactory.createLineBorder(Color.MAGENTA));
         setSize(new Dimension(WIDTH_OF_GAMEJPANEL, HEIGHT_OF_FRAME - 40));
@@ -132,9 +140,9 @@ public class ShipsJPanel extends JPanel {
     }
 
     private void drawRectangle(int x, int y, int side, Graphics g) {
-        g.setColor(Color.BLUE);
+        g.setColor(FILL_COLOR);
         g.fillRect(x, y, side, hei);
-        g.setColor(Color.GREEN);
+        g.setColor(Color.BLACK);
         g.drawRect(x, y, side, hei);
     }
 
@@ -166,21 +174,69 @@ public class ShipsJPanel extends JPanel {
         @Override
         public void actionPerformed(ActionEvent e) {
             if (e.getSource() == resetButton) {
-
+                ui1.reset();
+                ssb = 4;
+                msb = 3;
+                bsb = 2;
+                lsb = 1;
+                smallSquareButton.setText(ssb + "- Select");
+                smallSquareButton.setEnabled(true);
+                mediumSquareButton.setText(msb + "-Select");
+                mediumSquareButton.setEnabled(true);
+                bigSquareButton.setText(bsb + "-Select");
+                bigSquareButton.setEnabled(true);
+                largeSquareButton.setText(lsb + "-Select");
+                largeSquareButton.setEnabled(true);
             } else if (e.getSource() == readyButton) {
 
             } else if (e.getSource() == rotateButton) {
-
+                switch (direction) {
+                    case HARIZONTAL:
+                        direction = VERTICAL;
+                        break;
+                    case VERTICAL:
+                        direction = HARIZONTAL;
+                        break;
+                }
+                ui1.createSquareJLabel(direction, position);
             } else if (e.getSource() == leaveButton) {
 
             } else if (e.getSource() == smallSquareButton) {
-
+                if (ssb == 0) {
+                    smallSquareButton.setEnabled(false);
+                    return;
+                }
+                ui1.createSquareJLabel(direction, 1);
+                position = 1;
+                ssb--;
+                smallSquareButton.setText(ssb + "- Select");
             } else if (e.getSource() == mediumSquareButton) {
-
+                if (msb == 0) {
+                    mediumSquareButton.setEnabled(false);
+                    return;
+                }
+                ui1.createSquareJLabel(direction, 2);
+                position = 2;
+                msb--;
+                mediumSquareButton.setText(msb + "- Select");
             } else if (e.getSource() == bigSquareButton) {
-
+                if (bsb == 0) {
+                    bigSquareButton.setEnabled(false);
+                    return;
+                }
+                ui1.createSquareJLabel(direction, 3);
+                position = 3;
+                bsb--;
+                bigSquareButton.setText(bsb + "- Select");
             } else if (e.getSource() == largeSquareButton) {
-
+                if (lsb == 0) {
+                    largeSquareButton.setEnabled(false);
+                    return;
+                }
+                ui1.createSquareJLabel(direction, 4);
+                position = 4;
+                lsb--;
+                largeSquareButton.setText(lsb + "- Select");
             }
         }
     }

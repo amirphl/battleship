@@ -4,13 +4,12 @@ import ir.aut.test.testProgram.ClientThread;
 import ir.aut.test.testProgram.ServerThread;
 import ir.aut.test.view.Frame;
 
-import javax.swing.*;
 
 public class Main {
 
     public static void main(String[] args) {
-        Frame frame = new Frame();
-        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        Frame frame = new Frame("Please Arrange your Field.", true);
+        frame.setVisible(true);
     }
 
     private static void testNetwork() {

@@ -13,6 +13,8 @@ public class Constants {
      */
     public static final int SIDE_LENGTH = 50;
     public static final Color LINE_COLOR = Color.BLACK;
+
+    public static final Color FILL_COLOR = Color.ORANGE;
     /**
      * LEN : Number Of Squares In Line.
      */
@@ -27,4 +29,9 @@ public class Constants {
 
     public static final int WIDTH_OF_FRAME = 1200;
     public static final int HEIGHT_OF_FRAME = 900;
+
+    public static final int HARIZONTAL = 1;
+    public static final int VERTICAL = 0;
+
+    public static final int gap = 30;
 }
