@@ -8,12 +8,13 @@ import ir.aut.test.view.Frame;
 public class Main {
 
     public static void main(String[] args) {
-        Frame frame = new Frame("Please Arrange your Field.", true);
-        frame.setVisible(true);
+//        Frame frame = new Frame();
+//        frame.setVisible(true);
+        testNetwork();
     }
 
     private static void testNetwork() {
-        int port = 5226;
+        int port = 5227;
         ServerThread serverThread = new ServerThread(port);
         ClientThread clientThread = new ClientThread(port);
         clientThread.start();
@@ -23,14 +24,14 @@ public class Main {
             e.printStackTrace();
         }
         serverThread.start();
-        serverThread.sentMessage("amirPHL", "123654");
-        clientThread.sendMessage("mohsenPHL", "987456");
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        clientThread.closeConnection();
-        serverThread.sentMessage("amirPHL", "123654");
+//        serverThread.sentMessage("amirPHL", "123654");
+//        clientThread.sendMessage("mohsenPHL", "987456");
+//        try {
+//            Thread.sleep(2000);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+//        clientThread.closeConnection();
+//        serverThread.sentMessage("amirPHL", "123654");
     }
 }

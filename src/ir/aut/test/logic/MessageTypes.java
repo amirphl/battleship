@@ -12,4 +12,6 @@ public class MessageTypes {
      * Code of request login message
      */
     public static final byte REQUEST_LOGIN = 1;
+
+    public static final byte READINESS = 2;
 }

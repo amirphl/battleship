@@ -23,16 +23,17 @@ public class SquaresEditor {
         n = 0;
     }
 
-    public void run() {
+    public boolean run() {
         findRawAndColumn();
         if (raw == -1 || column == -1)
-            return;
+            return false;
         if (direction == HARIZONTAL)
             fillInHarizontal();
         else if (direction == VERTICAL)
             fillInVertical();
         raw = -1;
         column = -1;
+        return true;
     }
 
     private void findRawAndColumn() {
@@ -40,7 +41,7 @@ public class SquaresEditor {
             if (S_X + (SIDE_LENGTH * i) < mX && mX < S_X + (SIDE_LENGTH * (i + 1))) {
                 column = i;
             }
-            if (S_Y + gap + (SIDE_LENGTH * i) < mY && mY < S_Y + gap + (SIDE_LENGTH * (i + 1))) {
+            if (S_Y + GAP + (SIDE_LENGTH * i) < mY && mY < S_Y + GAP + (SIDE_LENGTH * (i + 1))) {
                 raw = i;
             }
         }

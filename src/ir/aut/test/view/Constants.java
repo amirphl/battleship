@@ -12,20 +12,21 @@ public class Constants {
      * SIDE_LENGTH : Length of each square
      */
     public static final int SIDE_LENGTH = 50;
-    public static final Color LINE_COLOR = Color.BLACK;
+//    public static final Color LINE_COLOR = Color.BLACK;
 
-    public static final Color FILL_COLOR = Color.ORANGE;
+    public static final Color FILL_COLOR = Color.BLUE;
+    public static final Color IMPART_COLOR = Color.RED;
     /**
      * LEN : Number Of Squares In Line.
      */
     public static final int LEN = 10;
-    public static final Font TEXT_FONT = new Font("Serif", Font.PLAIN + Font.BOLD, 20);
+    public static final Font TEXT_FONT = new Font("SanSerif", Font.PLAIN, 16);
 
     public static final int WIDTH_OF_MENUJPANEL = 100;
     public static final int HEIGHT_OF_MENUJPANEL = 40;
 
-    public static final int WIDTH_OF_GAMEJPANEL = 900;
-    public static final int HEIGHT_OF_GAMEJPANEL = 700;
+    public static final int WIDTH_OF_ORDERINGJPANEL = 900;
+    public static final int HEIGHT_OF_ORDERINGJPANEL = 700;
 
     public static final int WIDTH_OF_FRAME = 1200;
     public static final int HEIGHT_OF_FRAME = 900;
@@ -33,5 +34,8 @@ public class Constants {
     public static final int HARIZONTAL = 1;
     public static final int VERTICAL = 0;
 
-    public static final int gap = 30;
+    public static final int GAP = 30;
+
+    public static final String SERVER = "server";
+    public static final String CLIENT = "client";
 }

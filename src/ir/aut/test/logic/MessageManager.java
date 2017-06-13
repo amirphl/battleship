@@ -1,5 +1,7 @@
 package ir.aut.test.logic;
 
+import ir.aut.test.view.UI2;
+
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,10 +13,12 @@ import java.util.List;
  * onMessageReceived
  * onSocketClosed
  */
-public class MessageManager implements ServerSocketHandler.IServerSocketHandlerCallback, NetworkHandler.INetworkHandlerCallback {
+public class MessageManager implements ServerSocketHandler.IServerSocketHandlerCallback,
+        NetworkHandler.INetworkHandlerCallback {
     private ServerSocketHandler mServerSocketHandler;
     private List<NetworkHandler> mNetworkHandlerList;
     private int index = 0;
+    private UI2 shipsJPanel;
 
     /**
      * Instantiate server socket handler and start it. (Call this constructor in host mode)
@@ -43,6 +47,10 @@ public class MessageManager implements ServerSocketHandler.IServerSocketHandlerC
         mNetworkHandlerList.get(index).sendMessage(new RequestLoginMessage(username, password));
     }
 
+    public void sendReadinessCondition(boolean bool) {
+        mNetworkHandlerList.get(index).sendMessage(new ReadinessMessage(bool));
+    }
+
     /**
      * Accepts which netWorkHandler to connect and communicate.
      */
@@ -65,6 +73,14 @@ public class MessageManager implements ServerSocketHandler.IServerSocketHandlerC
         System.out.println(message.getUsername() + " " + message.getPassword());
     }
 
+    private void consumeReadiness(ReadinessMessage message) {
+        shipsJPanel.setOpponentReady(message.getReadinessCondition());
+    }
+
+    public void setShipsJPanel(UI2 shipsJPanel) {
+        this.shipsJPanel = shipsJPanel;
+    }
+
     /**
      * IMPORTANT: Request login is an example message and doesn’t relate to this project!
      * According to the message type of baseMessage, call corresponding method to use it.
@@ -74,6 +90,9 @@ public class MessageManager implements ServerSocketHandler.IServerSocketHandlerC
         switch (baseMessage.getMessageType()) {
             case MessageTypes.REQUEST_LOGIN:
                 consumeRequestLogin((RequestLoginMessage) baseMessage);
+                break;
+            case MessageTypes.READINESS:
+                consumeReadiness((ReadinessMessage) baseMessage);
                 break;
         }
     }

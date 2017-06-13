@@ -1,5 +1,7 @@
 package ir.aut.test.view;
 
+import ir.aut.test.logic.MessageManager;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
@@ -16,21 +18,36 @@ import static ir.aut.test.view.Constants.*;
  */
 public class Frame extends JLayeredPane implements MouseMotionListener, UI1, MouseListener {
     private JFrame frame;
-    private GameJPanel gameJPanel;
+    private MessageManager messageManager;
+    private String station;
+    private OrderingJPanel orderingJPanel;
     private ChatJPanel chatJPanel;
     private ShipsJPanel shipsJPanel;
     private JLabel jLabel;
     private MySquare[][] mySquares;
-    private String sentence;
-    private boolean mode;
+    private MySquare[][] opponentSquares;
+    private String sentence = "Please Arrange your Field.";
+    /**
+     * mode : true ----> in chapter of editing and setting ships in map.
+     * mode : false ----> in chapter of playing .
+     */
+    private boolean mode = true;
+    /**
+     * jLabelDirection = 0 ----> HARIZONTAL .
+     * jLabelDirection = 1 ----> VERTICAL .
+     */
     private int jLabelDirection = 0;
     private boolean isJLabelUsed = false;
+    /**
+     * n : Length of ship .
+     */
     private int n = 0;
     private SquaresEditor squaresEditor;
+    private boolean iAmNewSquare = true;
 
-    public Frame(String sentence, boolean mode) {
-        this.sentence = sentence;
-        this.mode = mode;
+    public Frame(MessageManager messageManager, String station) {
+        this.messageManager = messageManager;
+        this.station = station;
         frame = new JFrame("Battle Ship");
         frame.setLayout(null);
         frame.setSize(new Dimension(WIDTH_OF_FRAME, HEIGHT_OF_FRAME));
@@ -40,23 +57,27 @@ public class Frame extends JLayeredPane implements MouseMotionListener, UI1, Mou
         frame.setContentPane(this);
         frame.addMouseMotionListener(this);
         frame.addMouseListener(this);
+
+        createMySquares();
+        orderingJPanel = new OrderingJPanel(mySquares, sentence);
+        chatJPanel = new ChatJPanel();
+        shipsJPanel = new ShipsJPanel(this, messageManager);
+        createJLabel();
+        add(orderingJPanel, 0);
+        add(chatJPanel, 0);
+        add(shipsJPanel, 0);
+        squaresEditor = new SquaresEditor(mySquares);
+        frame.revalidate();
+        frame.setVisible(true);
+    }
+
+    private void createMySquares() {
         mySquares = new MySquare[LEN][LEN];
         for (int i = 0; i < LEN; i++) {
             for (int j = 0; j < LEN; j++) {
                 mySquares[i][j] = new MySquare(10 * i + j, S_X + j * SIDE_LENGTH, S_Y + i * SIDE_LENGTH);
             }
         }
-        gameJPanel = new GameJPanel(mySquares, sentence);
-        chatJPanel = new ChatJPanel();
-        shipsJPanel = new ShipsJPanel(mode, this);
-        add(gameJPanel, 0);
-        add(chatJPanel, 0);
-        add(shipsJPanel, 0);
-        if (mode == true)
-            createJLabel();
-        squaresEditor = new SquaresEditor(mySquares);
-        frame.revalidate();
-        frame.setVisible(true);
     }
 
     private void createJLabel() {
@@ -70,8 +91,12 @@ public class Frame extends JLayeredPane implements MouseMotionListener, UI1, Mou
         add(jLabel, new Integer(2), 1);
     }
 
+    private void removeJLabel() {
+        remove(jLabel);
+    }
+
     @Override
-    public void createSquareJLabel(int direction, int n) {
+    public void boundJLabel(int direction, int n) {
         jLabelDirection = direction;
         isJLabelUsed = false;
         this.n = n;
@@ -96,27 +121,58 @@ public class Frame extends JLayeredPane implements MouseMotionListener, UI1, Mou
     }
 
     @Override
+    public void setIAmNewSquare(boolean bool) {
+        iAmNewSquare = bool;
+    }
+
+    @Override
+    public void startGame() {
+        System.out.println("Server or client ??? game started.");
+        System.out.println("Server or client ??? game started.");
+        System.out.println("Server or client ??? game started.");
+        System.out.println("Server or client ??? game started.");
+        System.out.println("Server or client ??? game started.");
+    }
+
+    @Override
+    public void sendReadinessCondition(boolean bool) {
+
+    }
+
+    @Override
     public void mouseDragged(MouseEvent e) {
 
     }
 
     @Override
     public void mouseMoved(MouseEvent e) {
-        if (jLabel != null) {
-            jLabel.setLocation(e.getX(), e.getY());
-        }
+        new Thread() {
+            public void run() {
+                if (jLabel != null) {
+                    jLabel.setLocation(e.getX(), e.getY());
+                }
+            }
+        }.start();
     }
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        squaresEditor.setmX(e.getX());
-        squaresEditor.setmY(e.getY());
-        squaresEditor.setDirection(jLabelDirection);
-        squaresEditor.setN(n);
-        if (!isJLabelUsed)
-            squaresEditor.run();
-        isJLabelUsed = true;
-        repaint();
+        new Thread() {
+            public void run() {
+                squaresEditor.setmX(e.getX());
+                squaresEditor.setmY(e.getY());
+                squaresEditor.setDirection(jLabelDirection);
+                squaresEditor.setN(n);
+                if (isJLabelUsed || !iAmNewSquare)
+                    return;
+                if (squaresEditor.run()) {
+                    isJLabelUsed = true;
+                    iAmNewSquare = false;
+                    shipsJPanel.changeTextOfButton();
+                    repaint();
+                }
+            }
+        }.start();
     }
 
     @Override
@@ -137,5 +193,25 @@ public class Frame extends JLayeredPane implements MouseMotionListener, UI1, Mou
     @Override
     public void mouseExited(MouseEvent e) {
 
+    }
+
+    public void setMode(boolean mode) {
+        this.mode = mode;
+    }
+
+    public void setSentence(String sentence) {
+        this.sentence = sentence;
+    }
+
+    public boolean getMode() {
+        return mode;
+    }
+
+    public String getSentence() {
+        return sentence;
+    }
+
+    public boolean getIAmNewSquare() {
+        return iAmNewSquare;
     }
 }

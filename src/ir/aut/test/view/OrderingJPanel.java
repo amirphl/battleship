@@ -6,27 +6,29 @@ import java.awt.*;
 import static ir.aut.test.view.Constants.*;
 
 /**
+ * This class provides a JPanel that player can order ships and set them in to the map.
+ * this class works with an array of MySquare[][] and paint squares on map according the features in
+ * each member of array .
  * Created by Yana on 05/06/2017.
  */
-public class GameJPanel extends JPanel {
+public class OrderingJPanel extends JPanel {
     private MySquare[][] mySquares;
-    private String sentence;
+    private String sentence = " ";
     private MenuJPanel menuJPanel;
 
-    public GameJPanel(MySquare[][] mySquares, String sentence) {
+    public OrderingJPanel(MySquare[][] mySquares, String sentence) {
         this(mySquares);
         this.sentence = sentence;
     }
 
-    public GameJPanel(MySquare[][] mySquares) {
+    public OrderingJPanel(MySquare[][] mySquares) {
         this.mySquares = mySquares;
-        this.sentence = " ";
         setLayout(null);
         menuJPanel = new MenuJPanel();
         add(menuJPanel);
         setBorder(BorderFactory.createLineBorder(Color.BLACK));
-        setSize(new Dimension(WIDTH_OF_GAMEJPANEL, HEIGHT_OF_GAMEJPANEL));
-        setBounds(0, 0, WIDTH_OF_GAMEJPANEL, HEIGHT_OF_GAMEJPANEL);
+        setSize(new Dimension(WIDTH_OF_ORDERINGJPANEL, HEIGHT_OF_ORDERINGJPANEL));
+        setBounds(0, 0, WIDTH_OF_ORDERINGJPANEL, HEIGHT_OF_ORDERINGJPANEL);
         setOpaque(true);
     }
 
@@ -43,7 +45,7 @@ public class GameJPanel extends JPanel {
             }
         }
 
-        g.setColor(LINE_COLOR);
+        g.setColor(Color.BLACK);
         int x = mySquares[0][0].getmX();
         int y = mySquares[0][0].getmY();
         for (int i = 0; i < LEN + 1; i++) {
