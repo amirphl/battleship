@@ -7,7 +7,7 @@ import static ir.aut.test.view.Constants.*;
  */
 public class SquaresEditor {
 
-    private MySquare[][] mySquares;
+    private Square[][] squares;
     private int mX;
     private int mY;
     private int direction;
@@ -15,8 +15,8 @@ public class SquaresEditor {
     private int raw = -1;
     private int column = -1;
 
-    public SquaresEditor(MySquare[][] mySquares) {
-        this.mySquares = mySquares;
+    public SquaresEditor(Square[][] squares) {
+        this.squares = squares;
         mX = 0;
         mY = 0;
         direction = 0;
@@ -62,7 +62,7 @@ public class SquaresEditor {
     private void fillMyRectangleInHarizontalMode() {
         column -= n;
         for (int i = 0; i < n; i++) {
-            mySquares[raw][column++].fill(true);
+            squares[raw][column++].fill(true);
         }
     }
 
@@ -70,7 +70,7 @@ public class SquaresEditor {
         for (int k = i - 1; k < i + 2; k++) {
             for (int z = j - 1; z < j + 2; z++) {
                 try {
-                    if (mySquares[k][z].isFill())
+                    if (squares[k][z].isFill())
                         return true;
                 } catch (NullPointerException e) {
 
@@ -97,12 +97,12 @@ public class SquaresEditor {
     private void fillMyRectangleInVerticalMode() {
         raw -= n;
         for (int i = 0; i < n; i++) {
-            mySquares[raw++][column].fill(true);
+            squares[raw++][column].fill(true);
         }
     }
 
-    public void setMySquares(MySquare[][] mySquares) {
-        this.mySquares = mySquares;
+    public void setSquares(Square[][] squares) {
+        this.squares = squares;
     }
 
     public void setmX(int mX) {
@@ -121,8 +121,8 @@ public class SquaresEditor {
         this.n = n;
     }
 
-    public MySquare[][] getMySquares() {
-        return mySquares;
+    public Square[][] getSquares() {
+        return squares;
     }
 
     public int getmX() {

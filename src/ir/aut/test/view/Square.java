@@ -3,11 +3,12 @@ package ir.aut.test.view;
 import java.awt.*;
 
 import static ir.aut.test.view.Constants.FILL_COLOR;
+import static ir.aut.test.view.Constants.IMPART_COLOR;
 
 /**
  * Created by Yana on 05/06/2017.
  */
-public class MySquare {
+public class Square {
     private int id;
     private int mX;
     private int mY;
@@ -17,13 +18,13 @@ public class MySquare {
     private boolean isFill = false;
     private boolean isDestroyed = false;
 
-    public MySquare(int id, int mX, int mY) {
+    public Square(int id, int mX, int mY) {
         this.id = id;
         this.mX = mX;
         this.mY = mY;
     }
 
-    public MySquare(int id, int mX, int mY, String text) {
+    public Square(int id, int mX, int mY, String text) {
         this(id, mX, mY);
         this.text = text;
     }
@@ -44,6 +45,10 @@ public class MySquare {
         this.text = text;
     }
 
+    public void setBgColor(Color color) {
+        bgColor = color;
+    }
+
     public void fill(boolean bool) {
         isFill = bool;
         if (bool) {
@@ -54,8 +59,14 @@ public class MySquare {
         }
     }
 
-    public void destroyed(boolean bool) {
+    public void destroy(boolean bool) {
         isDestroyed = bool;
+        if (bool) {
+            bgColor = IMPART_COLOR;
+            return;
+        } else {
+            bgColor = Color.WHITE;
+        }
     }
 
     public int getId() {

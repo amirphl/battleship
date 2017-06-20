@@ -14,4 +14,6 @@ public class MessageTypes {
     public static final byte REQUEST_LOGIN = 1;
 
     public static final byte READINESS = 2;
+
+    public static final byte LOCATION = 3;
 }

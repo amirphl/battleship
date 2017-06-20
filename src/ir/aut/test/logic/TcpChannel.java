@@ -20,6 +20,7 @@ public class TcpChannel {
             System.out.println("Client :client trying to join.");
             mSocket = new Socket();
             mSocket.connect(socketAddress, timeout);
+            setTimeOut(timeout);
             System.out.println("Client :client connected to server.");
             getStreams();
         } catch (IOException e) {
@@ -29,6 +30,10 @@ public class TcpChannel {
 
     public TcpChannel(Socket socket, int timeout) {
         mSocket = socket;
+        setTimeOut(timeout);
+    }
+
+    private void setTimeOut(int timeout) {
         try {
             mSocket.setSoTimeout(timeout);
             getStreams();
@@ -55,6 +60,7 @@ public class TcpChannel {
             mInputStream.read(a);
         } catch (IOException e) {
 //            e.printStackTrace();
+            return null;
         }
         return a;
     }

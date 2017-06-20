@@ -25,6 +25,7 @@ public class ShipsJPanel extends JPanel implements UI2 {
     private boolean isEditing = true;
     private boolean isReady = false;
     private boolean isOpponentReady = false;
+    private String myName = " ";
     private String opponentName = " ";
     private boolean[] myS1 = {false, false, false, false};
     private boolean[] myS2 = {false, false, false};
@@ -47,10 +48,12 @@ public class ShipsJPanel extends JPanel implements UI2 {
     private int bsb = 2;
     private int lsb = 1;
     private boolean isInterrupted = false;
+    private Thread t;
 
-    public ShipsJPanel(UI1 ui1, MessageManager messageManager) {
+    public ShipsJPanel(UI1 ui1, MessageManager messageManager, String myName) {
         this.ui1 = ui1;
         this.messageManager = messageManager;
+        this.myName = myName;
         messageManager.setShipsJPanel(this);
         setLayout(null);
         setBorder(BorderFactory.createLineBorder(Color.BLACK));
@@ -208,23 +211,27 @@ public class ShipsJPanel extends JPanel implements UI2 {
                             isEditing = true;
                             isReady = false;
                             isInterrupted = true;
-                            messageManager.sendReadinessCondition(false);
+                            messageManager.sendReadinessCondition(false, myName);
                         } else {
                             isEditing = false;
                             isReady = true;
                             ui1.setIAmNewSquare(false);
-                            messageManager.sendReadinessCondition(true);
-                            new Thread() {
+                            messageManager.sendReadinessCondition(true, myName);
+                            t = new Thread() {
                                 public void run() {
-                                    while (!isInterrupted()) {
-                                        if (isOpponentReady) {
+                                    while (!isInterrupted) {
+                                        System.out.print("  ");
+                                        if (isOpponentReady()) {
                                             ui1.startGame();
                                             startGame();
-                                            interrupt();
+                                            isInterrupted = true;
+                                            isReady = false;
+                                            break;
                                         }
                                     }
                                 }
-                            }.start();
+                            };
+                            t.start();
                         }
                     } else if (e.getSource() == leaveButton) {
 
@@ -382,7 +389,9 @@ public class ShipsJPanel extends JPanel implements UI2 {
     }
 
     public void startGame() {
-
+        removeButtuns();
+        createButtons();
+        repaint();
     }
 
     public boolean isEditing() {
@@ -429,6 +438,7 @@ public class ShipsJPanel extends JPanel implements UI2 {
         return myS4;
     }
 
+    @Override
     public void setOpponentName(String opponentName) {
         this.opponentName = opponentName;
     }
@@ -440,6 +450,7 @@ public class ShipsJPanel extends JPanel implements UI2 {
     @Override
     public void setOpponentReady(boolean bool) {
         isOpponentReady = bool;
+        System.out.println(myName + " : I received " + isOpponentReady + " from opponent.");
     }
 
     public boolean isOpponentReady() {

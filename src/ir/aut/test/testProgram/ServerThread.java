@@ -10,11 +10,13 @@ public class ServerThread extends Thread {
     private MessageManager messageManager;
     private int port;
     private ServerFrameThread serverFrameThread;
+    private String myName;
 
-    public ServerThread(int port) {
+    public ServerThread(int port, String myName) {
         this.port = port;
+        this.myName = myName;
         messageManager = new MessageManager(port);
-        serverFrameThread = new ServerFrameThread(messageManager);
+        serverFrameThread = new ServerFrameThread(messageManager, myName);
     }
 
     public void run() {

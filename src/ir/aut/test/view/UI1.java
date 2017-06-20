@@ -12,5 +12,9 @@ public interface UI1 {
 
     void startGame();
 
-    void sendReadinessCondition(boolean bool);
+    void setMyTurn(boolean bool);
+
+    void impartMySquares(int i, int j);
+
+    void impartOpponentSquares(int i, int j, int condition);
 }

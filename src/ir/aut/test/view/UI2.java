@@ -7,4 +7,6 @@ public interface UI2 {
     void impact(int sizeOfArray, int player);
 
     void setOpponentReady(boolean bool);
+
+    void setOpponentName(String opponentName);
 }

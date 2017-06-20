@@ -8,9 +8,11 @@ import java.nio.ByteBuffer;
 public class ReadinessMessage extends BaseMessage {
 
     private boolean readinessCondition;
+    private String mUsername;
 
-    public ReadinessMessage(boolean readinessCondition) {
+    public ReadinessMessage(boolean readinessCondition, String mUsername) {
         this.readinessCondition = readinessCondition;
+        this.mUsername = mUsername;
         serialize();
     }
 
@@ -21,7 +23,8 @@ public class ReadinessMessage extends BaseMessage {
 
     @Override
     protected void serialize() {
-        int messageLength = 4 + 1 + 1 + 1;
+        int usernameLength = mUsername.getBytes().length;
+        int messageLength = 4 + 1 + 1 + 1 + 4 + usernameLength;
         ByteBuffer byteBuffer = ByteBuffer.allocate(messageLength);
         byteBuffer.putInt(messageLength);
         byteBuffer.put(MessageTypes.PROTOCOL_VERSION);
@@ -30,6 +33,8 @@ public class ReadinessMessage extends BaseMessage {
             byteBuffer.put((byte) 1);
         else
             byteBuffer.put((byte) 0);
+        byteBuffer.putInt(usernameLength);
+        byteBuffer.put(mUsername.getBytes());
         mSerialized = byteBuffer.array();
     }
 
@@ -43,6 +48,10 @@ public class ReadinessMessage extends BaseMessage {
             readinessCondition = true;
         else
             readinessCondition = false;
+        int usernameLength = byteBuffer.getInt();
+        byte[] usernameBytes = new byte[usernameLength];
+        byteBuffer.get(usernameBytes);
+        mUsername = new String(usernameBytes);
     }
 
     @Override
@@ -52,5 +61,9 @@ public class ReadinessMessage extends BaseMessage {
 
     public boolean getReadinessCondition() {
         return readinessCondition;
+    }
+
+    public String getmUsername() {
+        return mUsername;
     }
 }

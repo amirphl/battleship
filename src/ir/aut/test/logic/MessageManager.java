@@ -1,5 +1,6 @@
 package ir.aut.test.logic;
 
+import ir.aut.test.view.UI1;
 import ir.aut.test.view.UI2;
 
 import java.net.InetSocketAddress;
@@ -19,6 +20,7 @@ public class MessageManager implements ServerSocketHandler.IServerSocketHandlerC
     private List<NetworkHandler> mNetworkHandlerList;
     private int index = 0;
     private UI2 shipsJPanel;
+    private UI1 frame;
 
     /**
      * Instantiate server socket handler and start it. (Call this constructor in host mode)
@@ -47,8 +49,12 @@ public class MessageManager implements ServerSocketHandler.IServerSocketHandlerC
         mNetworkHandlerList.get(index).sendMessage(new RequestLoginMessage(username, password));
     }
 
-    public void sendReadinessCondition(boolean bool) {
-        mNetworkHandlerList.get(index).sendMessage(new ReadinessMessage(bool));
+    public void sendReadinessCondition(boolean bool, String username) {
+        mNetworkHandlerList.get(index).sendMessage(new ReadinessMessage(bool, username));
+    }
+
+    public void sendLocation(int i, int j, int condition) {
+        mNetworkHandlerList.get(index).sendMessage(new LocationMessage((byte) i, (byte) j, (byte) condition));
     }
 
     /**
@@ -75,10 +81,23 @@ public class MessageManager implements ServerSocketHandler.IServerSocketHandlerC
 
     private void consumeReadiness(ReadinessMessage message) {
         shipsJPanel.setOpponentReady(message.getReadinessCondition());
+        shipsJPanel.setOpponentName(message.getmUsername());
+//        System.out.println(message.getReadinessCondition() + " " + message.getmUsername());
+    }
+
+    private void consumeLocation(LocationMessage message) {
+        if (message.getmCondition() == 3)
+            frame.impartMySquares(message.getmI(), message.getmJ());
+        else
+            frame.impartOpponentSquares(message.getmI(), message.getmJ(), message.getmCondition());
     }
 
     public void setShipsJPanel(UI2 shipsJPanel) {
         this.shipsJPanel = shipsJPanel;
+    }
+
+    public void setFrame(UI1 frame) {
+        this.frame = frame;
     }
 
     /**
@@ -93,6 +112,9 @@ public class MessageManager implements ServerSocketHandler.IServerSocketHandlerC
                 break;
             case MessageTypes.READINESS:
                 consumeReadiness((ReadinessMessage) baseMessage);
+                break;
+            case MessageTypes.LOCATION:
+                consumeLocation((LocationMessage) baseMessage);
                 break;
         }
     }

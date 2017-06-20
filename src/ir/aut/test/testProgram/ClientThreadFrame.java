@@ -3,22 +3,22 @@ package ir.aut.test.testProgram;
 import ir.aut.test.logic.MessageManager;
 import ir.aut.test.view.Frame;
 
-import static ir.aut.test.view.Constants.SERVER;
+import static ir.aut.test.view.Constants.CLIENT;
 
 /**
- * Created by Yana on 06/06/2017.
+ * Created by Yana on 14/06/2017.
  */
-public class ServerFrameThread extends Thread {
+public class ClientThreadFrame extends Thread {
     private MessageManager messageManager;
     private Frame frame;
     private String myName;
 
-    public ServerFrameThread(MessageManager messageManager, String myName) {
+    public ClientThreadFrame(MessageManager messageManager, String myName) {
         this.messageManager = messageManager;
         this.myName = myName;
     }
 
     public void run() {
-        frame = new Frame(messageManager, SERVER, myName);
+        frame = new Frame(messageManager, CLIENT, myName);
     }
 }

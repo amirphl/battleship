@@ -18,7 +18,7 @@ public class NetworkHandler extends Thread {
     private boolean flag = true;
 
     public NetworkHandler(SocketAddress socketAddress, INetworkHandlerCallback iNetworkHandlerCallback) {
-        mTcpChannel = new TcpChannel(socketAddress, 300);
+        mTcpChannel = new TcpChannel(socketAddress, 100);
         this.iNetworkHandlerCallback = iNetworkHandlerCallback;
         createQueues();
         mConsumerThread = new ReceivedMessageConsumer();
@@ -26,7 +26,7 @@ public class NetworkHandler extends Thread {
     }
 
     public NetworkHandler(Socket socket, INetworkHandlerCallback iNetworkHandlerCallback) {
-        mTcpChannel = new TcpChannel(socket, 300);
+        mTcpChannel = new TcpChannel(socket, 100);
         this.iNetworkHandlerCallback = iNetworkHandlerCallback;
         createQueues();
         mConsumerThread = new ReceivedMessageConsumer();
@@ -97,6 +97,14 @@ public class NetworkHandler extends Thread {
                         case MessageTypes.REQUEST_LOGIN:
                             RequestLoginMessage requestLoginMessage = new RequestLoginMessage(array);
                             iNetworkHandlerCallback.onMessageReceived(requestLoginMessage);
+                            break;
+                        case MessageTypes.READINESS:
+                            ReadinessMessage readinessMessage = new ReadinessMessage(array);
+                            iNetworkHandlerCallback.onMessageReceived(readinessMessage);
+                            break;
+                        case MessageTypes.LOCATION:
+                            LocationMessage locationMessage = new LocationMessage(array);
+                            iNetworkHandlerCallback.onMessageReceived(locationMessage);
                             break;
                     }
                 } else if (mReceivedQueue.isEmpty()) {

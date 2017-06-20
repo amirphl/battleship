@@ -20,13 +20,16 @@ public class Frame extends JLayeredPane implements MouseMotionListener, UI1, Mou
     private JFrame frame;
     private MessageManager messageManager;
     private String station;
+    private String myName = " ";
     private OrderingJPanel orderingJPanel;
     private ChatJPanel chatJPanel;
     private ShipsJPanel shipsJPanel;
     private JLabel jLabel;
-    private MySquare[][] mySquares;
-    private MySquare[][] opponentSquares;
+    private Square[][] mySquares;
+    private Square[][] opponentSquares;
     private String sentence = "Please Arrange your Field.";
+    private boolean myTurn = true;
+    private boolean isGameStarted = false;
     /**
      * mode : true ----> in chapter of editing and setting ships in map.
      * mode : false ----> in chapter of playing .
@@ -45,9 +48,10 @@ public class Frame extends JLayeredPane implements MouseMotionListener, UI1, Mou
     private SquaresEditor squaresEditor;
     private boolean iAmNewSquare = true;
 
-    public Frame(MessageManager messageManager, String station) {
+    public Frame(MessageManager messageManager, String station, String myName) {
         this.messageManager = messageManager;
         this.station = station;
+        this.myName = myName;
         frame = new JFrame("Battle Ship");
         frame.setLayout(null);
         frame.setSize(new Dimension(WIDTH_OF_FRAME, HEIGHT_OF_FRAME));
@@ -58,10 +62,10 @@ public class Frame extends JLayeredPane implements MouseMotionListener, UI1, Mou
         frame.addMouseMotionListener(this);
         frame.addMouseListener(this);
 
-        createMySquares();
+        createSquares();
         orderingJPanel = new OrderingJPanel(mySquares, sentence);
         chatJPanel = new ChatJPanel();
-        shipsJPanel = new ShipsJPanel(this, messageManager);
+        shipsJPanel = new ShipsJPanel(this, messageManager, myName);
         createJLabel();
         add(orderingJPanel, 0);
         add(chatJPanel, 0);
@@ -71,11 +75,13 @@ public class Frame extends JLayeredPane implements MouseMotionListener, UI1, Mou
         frame.setVisible(true);
     }
 
-    private void createMySquares() {
-        mySquares = new MySquare[LEN][LEN];
+    private void createSquares() {
+        mySquares = new Square[LEN][LEN];
+        opponentSquares = new Square[LEN][LEN];
         for (int i = 0; i < LEN; i++) {
             for (int j = 0; j < LEN; j++) {
-                mySquares[i][j] = new MySquare(10 * i + j, S_X + j * SIDE_LENGTH, S_Y + i * SIDE_LENGTH);
+                mySquares[i][j] = new Square(10 * i + j, S_X + j * SIDE_LENGTH, S_Y + i * SIDE_LENGTH);
+                opponentSquares[i][j] = new Square(10 * i + j, S_X + j * SIDE_LENGTH, S_Y + i * SIDE_LENGTH);
             }
         }
     }
@@ -127,16 +133,58 @@ public class Frame extends JLayeredPane implements MouseMotionListener, UI1, Mou
 
     @Override
     public void startGame() {
-        System.out.println("Server or client ??? game started.");
-        System.out.println("Server or client ??? game started.");
-        System.out.println("Server or client ??? game started.");
-        System.out.println("Server or client ??? game started.");
-        System.out.println("Server or client ??? game started.");
+        isGameStarted = true;
+        removeJLabel();
+        messageManager.setFrame(this);
+        if (station.equals(SERVER))
+            setMyTurn(true);
+        else
+            setMyTurn(false);
     }
 
     @Override
-    public void sendReadinessCondition(boolean bool) {
+    public void impartMySquares(int i, int j) {
+        try {
+            if (mySquares[i][j].isFill()) {
+                mySquares[i][j].destroy(true);
+                mySquares[i][j].setText("#");
+                messageManager.sendLocation(i, j, 1);
+            } else if (mySquares[i][j].isDestroyed()) {
 
+            } else {
+                mySquares[i][j].setText("*");
+                messageManager.sendLocation(i, j, 0);
+                setMyTurn(true);
+            }
+        } catch (ArrayIndexOutOfBoundsException e) {
+
+        }
+        repaint();
+    }
+
+    @Override
+    public void impartOpponentSquares(int i, int j, int condition) {
+        if (condition == 1) {
+            opponentSquares[i][j].destroy(true);
+            opponentSquares[i][j].setText("#");
+        } else {
+            opponentSquares[i][j].setText("*");
+        }
+        remove(orderingJPanel);
+        orderingJPanel = new OrderingJPanel(opponentSquares, "Your Turn");
+        add(orderingJPanel, 0);
+        frame.revalidate();
+        if (condition == 0) {
+            remove(orderingJPanel);
+            orderingJPanel = new OrderingJPanel(opponentSquares, "Transforming ...");
+            add(orderingJPanel, 0);
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            setMyTurn(false);
+        }
     }
 
     @Override
@@ -159,17 +207,25 @@ public class Frame extends JLayeredPane implements MouseMotionListener, UI1, Mou
     public void mouseClicked(MouseEvent e) {
         new Thread() {
             public void run() {
-                squaresEditor.setmX(e.getX());
-                squaresEditor.setmY(e.getY());
-                squaresEditor.setDirection(jLabelDirection);
-                squaresEditor.setN(n);
-                if (isJLabelUsed || !iAmNewSquare)
-                    return;
-                if (squaresEditor.run()) {
-                    isJLabelUsed = true;
-                    iAmNewSquare = false;
-                    shipsJPanel.changeTextOfButton();
-                    repaint();
+                if (isGameStarted) {
+                    if (myTurn) {
+                        messageManager.sendLocation((e.getY() - S_Y - 30) / SIDE_LENGTH, (e.getX() - S_X) / SIDE_LENGTH, 3);
+                    } else {
+
+                    }
+                } else {
+                    squaresEditor.setmX(e.getX());
+                    squaresEditor.setmY(e.getY());
+                    squaresEditor.setDirection(jLabelDirection);
+                    squaresEditor.setN(n);
+                    if (isJLabelUsed || !iAmNewSquare)
+                        return;
+                    if (squaresEditor.run()) {
+                        isJLabelUsed = true;
+                        iAmNewSquare = false;
+                        shipsJPanel.changeTextOfButton();
+                        repaint();
+                    }
                 }
             }
         }.start();
@@ -213,5 +269,18 @@ public class Frame extends JLayeredPane implements MouseMotionListener, UI1, Mou
 
     public boolean getIAmNewSquare() {
         return iAmNewSquare;
+    }
+
+    @Override
+    public void setMyTurn(boolean bool) {
+        myTurn = bool;
+        remove(orderingJPanel);
+        if (myTurn) {
+            orderingJPanel = new OrderingJPanel(opponentSquares, "Your Turn.");
+        } else {
+            orderingJPanel = new OrderingJPanel(mySquares, "Opponent Turn.");
+        }
+        add(orderingJPanel, 0);
+        frame.revalidate();
     }
 }
