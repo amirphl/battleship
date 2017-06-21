@@ -1,5 +1,8 @@
 package ir.aut.test.logic;
 
+import ir.aut.test.tools.ManagerInterface;
+import ir.aut.test.view.EInterface;
+import ir.aut.test.view.RCInterface;
 import ir.aut.test.view.UI1;
 import ir.aut.test.view.UI2;
 
@@ -21,6 +24,8 @@ public class MessageManager implements ServerSocketHandler.IServerSocketHandlerC
     private int index = 0;
     private UI2 shipsJPanel;
     private UI1 frame;
+    private RCInterface receivedConnectionsFrame;
+    private EInterface expectationJFrame;
 
     /**
      * Instantiate server socket handler and start it. (Call this constructor in host mode)
@@ -57,6 +62,14 @@ public class MessageManager implements ServerSocketHandler.IServerSocketHandlerC
         mNetworkHandlerList.get(index).sendMessage(new LocationMessage((byte) i, (byte) j, (byte) condition));
     }
 
+    public void sendAccept() {
+        mNetworkHandlerList.get(index).sendMessage(new AcceptMessage());
+    }
+
+//    public void sendRequestName(String username) {
+//        mNetworkHandlerList.get(index).sendMessage(new RequestOpponentName(username));
+//    }
+
     /**
      * Accepts which netWorkHandler to connect and communicate.
      */
@@ -64,6 +77,7 @@ public class MessageManager implements ServerSocketHandler.IServerSocketHandlerC
         index = i;
         try {
             mNetworkHandlerList.get(i).start();
+            sendAccept();
         } catch (IndexOutOfBoundsException e) {
             e.printStackTrace();
             index = 0;
@@ -82,7 +96,6 @@ public class MessageManager implements ServerSocketHandler.IServerSocketHandlerC
     private void consumeReadiness(ReadinessMessage message) {
         shipsJPanel.setOpponentReady(message.getReadinessCondition());
         shipsJPanel.setOpponentName(message.getmUsername());
-//        System.out.println(message.getReadinessCondition() + " " + message.getmUsername());
     }
 
     private void consumeLocation(LocationMessage message) {
@@ -92,12 +105,24 @@ public class MessageManager implements ServerSocketHandler.IServerSocketHandlerC
             frame.impartOpponentSquares(message.getmI(), message.getmJ(), message.getmCondition());
     }
 
+    private void consumeAccept(AcceptMessage message) {
+        expectationJFrame.close();
+    }
+
     public void setShipsJPanel(UI2 shipsJPanel) {
         this.shipsJPanel = shipsJPanel;
     }
 
     public void setFrame(UI1 frame) {
         this.frame = frame;
+    }
+
+    public void setReceivedConnectionsFrame(RCInterface receivedConnectionsFrame) {
+        this.receivedConnectionsFrame = receivedConnectionsFrame;
+    }
+
+    public void setExpectationJFrame(EInterface expectationJFrame) {
+        this.expectationJFrame = expectationJFrame;
     }
 
     /**
@@ -116,6 +141,8 @@ public class MessageManager implements ServerSocketHandler.IServerSocketHandlerC
             case MessageTypes.LOCATION:
                 consumeLocation((LocationMessage) baseMessage);
                 break;
+            case MessageTypes.ACCEPT:
+                consumeAccept((AcceptMessage) baseMessage);
         }
     }
 
@@ -130,6 +157,12 @@ public class MessageManager implements ServerSocketHandler.IServerSocketHandlerC
     @Override
     public void onNewConnectionReceived(NetworkHandler networkHandler) {
         mNetworkHandlerList.add(networkHandler);
+        new Thread() {
+            public void run() {
+                receivedConnectionsFrame.addJPanel("", "");
+            }
+        }.start();
         System.out.println("networkHandler added to list");
     }
 }
+

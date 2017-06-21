@@ -106,6 +106,10 @@ public class NetworkHandler extends Thread {
                             LocationMessage locationMessage = new LocationMessage(array);
                             iNetworkHandlerCallback.onMessageReceived(locationMessage);
                             break;
+                        case MessageTypes.ACCEPT:
+                            AcceptMessage acceptMessage = new AcceptMessage(array);
+                            iNetworkHandlerCallback.onMessageReceived(acceptMessage);
+                            break;
                     }
                 } else if (mReceivedQueue.isEmpty()) {
                     try {

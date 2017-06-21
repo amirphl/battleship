@@ -16,4 +16,8 @@ public class MessageTypes {
     public static final byte READINESS = 2;
 
     public static final byte LOCATION = 3;
+
+    public static final byte REQUEST_NAME = 5;
+
+    public static final byte ACCEPT = 4;
 }

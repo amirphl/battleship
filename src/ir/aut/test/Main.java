@@ -3,13 +3,15 @@ package ir.aut.test;
 import ir.aut.test.logic.MessageManager;
 import ir.aut.test.testProgram.ClientThread;
 import ir.aut.test.testProgram.ServerThread;
+import ir.aut.test.tools.Manager;
+import ir.aut.test.view.ConnectionModeFrame;
 import ir.aut.test.view.Frame;
 
 
 public class Main {
     public static void main(String[] args) {
-        testNetwork();
-
+//        testNetwork();
+        Manager manager = new Manager();
 //        new Thread() {
 //            public void run() {
 //                a = new MessageManager(5325);
