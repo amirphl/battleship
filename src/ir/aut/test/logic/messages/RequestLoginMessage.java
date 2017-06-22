@@ -1,22 +1,24 @@
-package ir.aut.test.logic;
+package ir.aut.test.logic.messages;
+
+import ir.aut.test.logic.messages.BaseMessage;
+import ir.aut.test.logic.messages.MessageTypes;
 
 import java.nio.ByteBuffer;
 
 /**
- * Created by Yana on 06/06/2017.
+ * Created by Yana on 03/06/2017.
  */
-public class ReadinessMessage extends BaseMessage {
-
-    private boolean readinessCondition;
+public class RequestLoginMessage extends BaseMessage {
     private String mUsername;
+    private String mPassword;
 
-    public ReadinessMessage(boolean readinessCondition, String mUsername) {
-        this.readinessCondition = readinessCondition;
-        this.mUsername = mUsername;
+    public RequestLoginMessage(String username, String password) {
+        mUsername = username;
+        mPassword = password;
         serialize();
     }
 
-    public ReadinessMessage(byte[] serialized) {
+    public RequestLoginMessage(byte[] serialized) {
         mSerialized = serialized;
         deserialize();
     }
@@ -24,17 +26,16 @@ public class ReadinessMessage extends BaseMessage {
     @Override
     protected void serialize() {
         int usernameLength = mUsername.getBytes().length;
-        int messageLength = 4 + 1 + 1 + 1 + 4 + usernameLength;
+        int passwordLength = mPassword.getBytes().length;
+        int messageLength = 4 + 1 + 1 + 4 + usernameLength + 4 + passwordLength;
         ByteBuffer byteBuffer = ByteBuffer.allocate(messageLength);
         byteBuffer.putInt(messageLength);
         byteBuffer.put(MessageTypes.PROTOCOL_VERSION);
-        byteBuffer.put(MessageTypes.READINESS);
-        if (readinessCondition == true)
-            byteBuffer.put((byte) 1);
-        else
-            byteBuffer.put((byte) 0);
+        byteBuffer.put(MessageTypes.REQUEST_LOGIN);
         byteBuffer.putInt(usernameLength);
         byteBuffer.put(mUsername.getBytes());
+        byteBuffer.putInt(passwordLength);
+        byteBuffer.put(mPassword.getBytes());
         mSerialized = byteBuffer.array();
     }
 
@@ -44,26 +45,24 @@ public class ReadinessMessage extends BaseMessage {
         int messageLength = byteBuffer.getInt();
         byte protocolVersion = byteBuffer.get();
         byte messageType = byteBuffer.get();
-        if (byteBuffer.get() == 1)
-            readinessCondition = true;
-        else
-            readinessCondition = false;
         int usernameLength = byteBuffer.getInt();
         byte[] usernameBytes = new byte[usernameLength];
         byteBuffer.get(usernameBytes);
         mUsername = new String(usernameBytes);
+        int passwordLength = byteBuffer.getInt();
+        byte[] passwordBytes = new byte[passwordLength];
+        byteBuffer.get(passwordBytes);
+        mPassword = new String(passwordBytes);
     }
 
     @Override
     public byte getMessageType() {
-        return MessageTypes.READINESS;
+        return MessageTypes.REQUEST_LOGIN;
     }
-
-    public boolean getReadinessCondition() {
-        return readinessCondition;
-    }
-
-    public String getmUsername() {
+    public String getUsername() {
         return mUsername;
+    }
+    public String getPassword() {
+        return mPassword;
     }
 }

@@ -1,4 +1,4 @@
-package ir.aut.test.view;
+package ir.aut.test.view.second;
 
 import ir.aut.test.logic.MessageManager;
 
@@ -24,8 +24,8 @@ public class ShipsJPanel extends JPanel implements UI2 {
     private JButton leaveButton;
     private boolean isEditing = true;
     private boolean isReady = false;
-    private boolean isOpponentReady = false;
-    private String myName = " ";
+    private boolean opponentReadiness = false;
+    private boolean isInterrupted = false;
     private String opponentName = " ";
     private boolean[] myS1 = {false, false, false, false};
     private boolean[] myS2 = {false, false, false};
@@ -47,13 +47,11 @@ public class ShipsJPanel extends JPanel implements UI2 {
     private int msb = 3;
     private int bsb = 2;
     private int lsb = 1;
-    private boolean isInterrupted = false;
-    private Thread t;
+    private int numberOfUsedShips = 0;
 
-    public ShipsJPanel(UI1 ui1, MessageManager messageManager, String myName) {
+    public ShipsJPanel(UI1 ui1, MessageManager messageManager) {
         this.ui1 = ui1;
         this.messageManager = messageManager;
-        this.myName = myName;
         messageManager.setShipsJPanel(this);
         setLayout(null);
         setBorder(BorderFactory.createLineBorder(Color.BLACK));
@@ -65,7 +63,7 @@ public class ShipsJPanel extends JPanel implements UI2 {
     }
 
     private void createButtons() {
-        if (isEditing == true) {
+        if (isEditing) {
             resetButton = new JButton("Reset");
             readyButton = new JButton("Ready");
             rotateButton = new JButton("Rotate");
@@ -123,6 +121,10 @@ public class ShipsJPanel extends JPanel implements UI2 {
         mediumSquareButton.setOpaque(true);
         bigSquareButton.setOpaque(true);
         largeSquareButton.setOpaque(true);
+        smallSquareButton.setToolTipText("For picking a small ship , click me.");
+        mediumSquareButton.setToolTipText("For picking a medium ship , click me.");
+        bigSquareButton.setToolTipText("For picking a big ship , click me.");
+        largeSquareButton.setToolTipText("For picking a large ship , click me.");
         smallSquareButton.addActionListener(handler);
         mediumSquareButton.addActionListener(handler);
         bigSquareButton.addActionListener(handler);
@@ -172,9 +174,9 @@ public class ShipsJPanel extends JPanel implements UI2 {
         }
     }
 
-    private void drawMyRectangles(int x, int y, int side, Graphics g, boolean isImparted) {
-        if (isImparted)
-            g.setColor(IMPART_COLOR);
+    private void drawMyRectangles(int x, int y, int side, Graphics g, boolean isDestroyed) {
+        if (isDestroyed)
+            g.setColor(IMPACT_COLOR);
         else
             g.setColor(FILL_COLOR);
         g.fillRect(x, y, side, hei);
@@ -182,17 +184,11 @@ public class ShipsJPanel extends JPanel implements UI2 {
         g.drawRect(x, y, side, hei);
     }
 
-    private void drawOpponentRectangles(int x, int y, int side, Graphics g, boolean isImparted) {
+    private void drawOpponentRectangles(int x, int y, int side, Graphics g, boolean isDestroyed) {
         if (isEditing || isReady) {
             return;
         }
-        if (isImparted)
-            g.setColor(IMPART_COLOR);
-        else
-            g.setColor(FILL_COLOR);
-        g.fillRect(x, y, side, hei);
-        g.setColor(Color.BLACK);
-        g.drawRect(x, y, side, hei);
+        drawMyRectangles(x, y, side, g, isDestroyed);
     }
 
     private class Handler implements ActionListener {
@@ -202,25 +198,28 @@ public class ShipsJPanel extends JPanel implements UI2 {
             new Thread() {
                 public void run() {
                     if (e.getSource() == readyButton) {
-                        if (e.getActionCommand().equals("Ready"))
+                        if (e.getActionCommand().equals("Ready")) {
+                            if (numberOfUsedShips != 10) {
+                                JOptionPane.showMessageDialog(null, "Put all ships in the map.", "Error", JOptionPane.ERROR_MESSAGE);
+                                return;
+                            }
                             readyButton.setText("Cancel");
-                        else if (e.getActionCommand().equals("Cancel"))
+                        } else if (e.getActionCommand().equals("Cancel"))
                             readyButton.setText("Ready");
 
                         if (isReady) {
                             isEditing = true;
                             isReady = false;
                             isInterrupted = true;
-                            messageManager.sendReadinessCondition(false, myName);
+                            messageManager.sendReadinessCondition(false);
                         } else {
                             isEditing = false;
                             isReady = true;
-                            ui1.setIAmNewSquare(false);
-                            messageManager.sendReadinessCondition(true, myName);
-                            t = new Thread() {
+                            messageManager.sendReadinessCondition(true);
+                            new Thread() {
                                 public void run() {
                                     while (!isInterrupted) {
-                                        System.out.print("  ");
+                                        System.out.print("");
                                         if (isOpponentReady()) {
                                             ui1.startGame();
                                             startGame();
@@ -230,69 +229,27 @@ public class ShipsJPanel extends JPanel implements UI2 {
                                         }
                                     }
                                 }
-                            };
-                            t.start();
+                            }.start();
                         }
                     } else if (e.getSource() == leaveButton) {
 
                     }
                     if (isEditing) {
                         if (e.getSource() == resetButton) {
-                            ui1.reset();
-                            ssb = 4;
-                            msb = 3;
-                            bsb = 2;
-                            lsb = 1;
-                            smallSquareButton.setText(String.valueOf(ssb));
-                            smallSquareButton.setEnabled(true);
-                            mediumSquareButton.setText(String.valueOf(msb));
-                            mediumSquareButton.setEnabled(true);
-                            bigSquareButton.setText(String.valueOf(bsb));
-                            bigSquareButton.setEnabled(true);
-                            largeSquareButton.setText(String.valueOf(lsb));
-                            largeSquareButton.setEnabled(true);
+                            resetButtons();
                         } else if (e.getSource() == rotateButton) {
-                            switch (direction) {
-                                case HARIZONTAL:
-                                    direction = VERTICAL;
-                                    break;
-                                case VERTICAL:
-                                    direction = HARIZONTAL;
-                                    break;
-                            }
-                            ui1.boundJLabel(direction, position);
-                        } else if (e.getSource() == smallSquareButton) {
-                            if (ssb == 0) {
-                                smallSquareButton.setEnabled(false);
-                                return;
-                            }
-                            ui1.setIAmNewSquare(true);
-                            ui1.boundJLabel(direction, 1);
-                            position = 1;
+                            rotateButton();
+                        } else {
+                            disableButtons();
+                        }
+                        if (e.getSource() == smallSquareButton) {
+                            ui1.boundJLabel(direction, position = 1);
                         } else if (e.getSource() == mediumSquareButton) {
-                            if (msb == 0) {
-                                mediumSquareButton.setEnabled(false);
-                                return;
-                            }
-                            ui1.setIAmNewSquare(true);
-                            ui1.boundJLabel(direction, 2);
-                            position = 2;
+                            ui1.boundJLabel(direction, position = 2);
                         } else if (e.getSource() == bigSquareButton) {
-                            if (bsb == 0) {
-                                bigSquareButton.setEnabled(false);
-                                return;
-                            }
-                            ui1.setIAmNewSquare(true);
-                            ui1.boundJLabel(direction, 3);
-                            position = 3;
+                            ui1.boundJLabel(direction, position = 3);
                         } else if (e.getSource() == largeSquareButton) {
-                            if (lsb == 0) {
-                                largeSquareButton.setEnabled(false);
-                                return;
-                            }
-                            ui1.setIAmNewSquare(true);
-                            ui1.boundJLabel(direction, 4);
-                            position = 4;
+                            ui1.boundJLabel(direction, position = 4);
                         }
                     }
                     repaint();
@@ -302,7 +259,7 @@ public class ShipsJPanel extends JPanel implements UI2 {
     }
 
     @Override
-    public void impact(int sizeOfShip, int player) {
+    public void destroy(int sizeOfShip, int player) {
         switch (sizeOfShip) {
             case 1:
                 for (int i = 3; i >= 0; i--) {
@@ -383,77 +340,67 @@ public class ShipsJPanel extends JPanel implements UI2 {
         revalidate();
     }
 
-    public void setEditing(boolean bool) {
-        isEditing = bool;
-        repaint();
+    public void disableButtons() {
+        smallSquareButton.setEnabled(false);
+        mediumSquareButton.setEnabled(false);
+        bigSquareButton.setEnabled(false);
+        largeSquareButton.setEnabled(false);
     }
 
-    public void startGame() {
+    public void enableButtons() {
+        numberOfUsedShips++;
+        if (ssb != 0)
+            smallSquareButton.setEnabled(true);
+        if (msb != 0)
+            mediumSquareButton.setEnabled(true);
+        if (bsb != 0)
+            bigSquareButton.setEnabled(true);
+        if (lsb != 0)
+            largeSquareButton.setEnabled(true);
+    }
+
+    private void resetButtons() {
+        ui1.reset();
+        numberOfUsedShips = 0;
+        ssb = 4;
+        msb = 3;
+        bsb = 2;
+        lsb = 1;
+        smallSquareButton.setText(String.valueOf(ssb));
+        smallSquareButton.setEnabled(true);
+        mediumSquareButton.setText(String.valueOf(msb));
+        mediumSquareButton.setEnabled(true);
+        bigSquareButton.setText(String.valueOf(bsb));
+        bigSquareButton.setEnabled(true);
+        largeSquareButton.setText(String.valueOf(lsb));
+        largeSquareButton.setEnabled(true);
+    }
+
+    private void rotateButton() {
+        switch (direction) {
+            case HARIZONTAL:
+                direction = VERTICAL;
+                break;
+            case VERTICAL:
+                direction = HARIZONTAL;
+                break;
+        }
+        ui1.removeJLabel();
+        ui1.boundJLabel(direction, position);
+    }
+
+    private void startGame() {
         removeButtuns();
         createButtons();
+        opponentName = ui1.getOpponentName();
         repaint();
     }
 
-    public boolean isEditing() {
-        return isEditing;
-    }
-
-    public void setReady(boolean bool) {
-        isReady = bool;
-    }
-
-    public boolean isReady() {
-        return isReady;
-    }
-
-    public void setMyS1(boolean[] myS1) {
-        this.myS1 = myS1;
-    }
-
-    public boolean[] getMyS1() {
-        return myS1;
-    }
-
-    public void setMyS2(boolean[] myS2) {
-        this.myS2 = myS2;
-    }
-
-    public boolean[] getMyS2() {
-        return myS2;
-    }
-
-    public void setMyS3(boolean[] myS3) {
-        this.myS3 = myS3;
-    }
-
-    public boolean[] getMyS3() {
-        return myS3;
-    }
-
-    public void setMyS4(boolean[] myS4) {
-        this.myS4 = myS4;
-    }
-
-    public boolean[] getMyS4() {
-        return myS4;
-    }
-
-    @Override
-    public void setOpponentName(String opponentName) {
-        this.opponentName = opponentName;
-    }
-
-    public String getOpponentName() {
-        return opponentName;
-    }
-
-    @Override
-    public void setOpponentReady(boolean bool) {
-        isOpponentReady = bool;
-        System.out.println(myName + " : I received " + isOpponentReady + " from opponent.");
+    public void setOpponentReadiness(boolean bool) {
+        opponentReadiness = bool;
     }
 
     public boolean isOpponentReady() {
-        return isOpponentReady;
+        return opponentReadiness;
     }
 }

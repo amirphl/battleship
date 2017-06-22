@@ -15,7 +15,7 @@ public class Constants {
 //    public static final Color LINE_COLOR = Color.BLACK;
 
     public static final Color FILL_COLOR = Color.BLUE;
-    public static final Color IMPART_COLOR = Color.RED;
+    public static final Color IMPACT_COLOR = Color.RED;
     /**
      * LEN : Number Of Squares In Line.
      */

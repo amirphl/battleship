@@ -1,7 +1,7 @@
-package ir.aut.test.view;
+package ir.aut.test.view.first;
 
 import ir.aut.test.logic.MessageManager;
-import ir.aut.test.tools.ManagerInterface;
+import ir.aut.test.head.ManagerInterface;
 
 import javax.swing.*;
 import java.awt.*;
@@ -16,7 +16,7 @@ public class ReceivedConnectionsFrame extends JFrame implements RCInterface {
     private MessageManager messageManager;
     private JTextArea textArea;
     private int counter = 0;
-    private ArrayList<OpponentInformationsJPanel> arrayList;
+    private ArrayList<OpponentInformationJPanel> arrayList;
 
     public ReceivedConnectionsFrame(ManagerInterface manager, MessageManager messageManager) {
         this.manager = manager;
@@ -31,21 +31,20 @@ public class ReceivedConnectionsFrame extends JFrame implements RCInterface {
         setLocation(200, 200);
         textArea = new JTextArea("Received Connections:");
         textArea.setFont(new Font("SanSerif", Font.PLAIN, 18));
-        textArea.setBackground(Color.BLACK);
-        textArea.setEnabled(false);
+        textArea.setBackground(Color.GRAY);
         textArea.setBounds(0, 0, 185, 25);
         textArea.setBorder(BorderFactory.createLineBorder(Color.BLUE));
         add(textArea);
+        setVisible(true);
     }
 
     @Override
     public synchronized void addJPanel(String opponentName, String opponentIP) {
-        OpponentInformationsJPanel jPanel = new OpponentInformationsJPanel(opponentName, opponentIP, counter, this);
+        OpponentInformationJPanel jPanel = new OpponentInformationJPanel(opponentName, opponentIP, counter, this);
         counter++;
         arrayList.add(jPanel);
         add(jPanel);
-        setVisible(true);
-        revalidate();
+        repaint();
     }
 
     @Override

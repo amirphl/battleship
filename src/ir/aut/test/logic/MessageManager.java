@@ -1,10 +1,10 @@
 package ir.aut.test.logic;
 
-import ir.aut.test.tools.ManagerInterface;
-import ir.aut.test.view.EInterface;
-import ir.aut.test.view.RCInterface;
-import ir.aut.test.view.UI1;
-import ir.aut.test.view.UI2;
+import ir.aut.test.logic.messages.*;
+import ir.aut.test.view.first.EInterface;
+import ir.aut.test.view.first.RCInterface;
+import ir.aut.test.view.second.UI1;
+import ir.aut.test.view.second.UI2;
 
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
@@ -22,8 +22,8 @@ public class MessageManager implements ServerSocketHandler.IServerSocketHandlerC
     private ServerSocketHandler mServerSocketHandler;
     private List<NetworkHandler> mNetworkHandlerList;
     private int index = 0;
-    private UI2 shipsJPanel;
     private UI1 frame;
+    private UI2 shipsJPanel;
     private RCInterface receivedConnectionsFrame;
     private EInterface expectationJFrame;
 
@@ -54,8 +54,8 @@ public class MessageManager implements ServerSocketHandler.IServerSocketHandlerC
         mNetworkHandlerList.get(index).sendMessage(new RequestLoginMessage(username, password));
     }
 
-    public void sendReadinessCondition(boolean bool, String username) {
-        mNetworkHandlerList.get(index).sendMessage(new ReadinessMessage(bool, username));
+    public void sendReadinessCondition(boolean bool) {
+        mNetworkHandlerList.get(index).sendMessage(new ReadinessMessage(bool));
     }
 
     public void sendLocation(int i, int j, int condition) {
@@ -66,9 +66,9 @@ public class MessageManager implements ServerSocketHandler.IServerSocketHandlerC
         mNetworkHandlerList.get(index).sendMessage(new AcceptMessage());
     }
 
-//    public void sendRequestName(String username) {
-//        mNetworkHandlerList.get(index).sendMessage(new RequestOpponentName(username));
-//    }
+    public void sendMyName(String username) {
+        mNetworkHandlerList.get(index).sendMessage(new NameMessage(username));
+    }
 
     /**
      * Accepts which netWorkHandler to connect and communicate.
@@ -94,19 +94,22 @@ public class MessageManager implements ServerSocketHandler.IServerSocketHandlerC
     }
 
     private void consumeReadiness(ReadinessMessage message) {
-        shipsJPanel.setOpponentReady(message.getReadinessCondition());
-        shipsJPanel.setOpponentName(message.getmUsername());
+        shipsJPanel.setOpponentReadiness(message.getReadinessCondition());
     }
 
     private void consumeLocation(LocationMessage message) {
         if (message.getmCondition() == 3)
-            frame.impartMySquares(message.getmI(), message.getmJ());
+            frame.destroyMyShips(message.getmI(), message.getmJ());
         else
-            frame.impartOpponentSquares(message.getmI(), message.getmJ(), message.getmCondition());
+            frame.destroyOpponentShips(message.getmI(), message.getmJ(), message.getmCondition());
     }
 
     private void consumeAccept(AcceptMessage message) {
         expectationJFrame.close();
+    }
+
+    private void consumeOpponentName(NameMessage message) {
+        frame.setOpponentName(message.getUsername());
     }
 
     public void setShipsJPanel(UI2 shipsJPanel) {
@@ -143,6 +146,10 @@ public class MessageManager implements ServerSocketHandler.IServerSocketHandlerC
                 break;
             case MessageTypes.ACCEPT:
                 consumeAccept((AcceptMessage) baseMessage);
+                break;
+            case MessageTypes.REQUEST_NAME:
+                consumeOpponentName((NameMessage) baseMessage);
+                break;
         }
     }
 

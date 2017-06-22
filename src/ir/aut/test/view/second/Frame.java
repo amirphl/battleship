@@ -1,6 +1,8 @@
-package ir.aut.test.view;
+package ir.aut.test.view.second;
 
 import ir.aut.test.logic.MessageManager;
+import ir.aut.test.view.squar.Square;
+import ir.aut.test.view.squar.SquaresEditor;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -21,32 +23,26 @@ public class Frame extends JLayeredPane implements MouseMotionListener, UI1, Mou
     private MessageManager messageManager;
     private String station;
     private String myName = " ";
+    private String opponentName = " ";
     private OrderingJPanel orderingJPanel;
     private ChatJPanel chatJPanel;
     private ShipsJPanel shipsJPanel;
     private JLabel jLabel;
     private Square[][] mySquares;
     private Square[][] opponentSquares;
-    private String sentence = "Please Arrange your Field.";
     private boolean myTurn = true;
-    private boolean isGameStarted = false;
-    /**
-     * mode : true ----> in chapter of editing and setting ships in map.
-     * mode : false ----> in chapter of playing .
-     */
-    private boolean mode = true;
+    private boolean abstractTurn = true;
+    private boolean gameStarting = false;
     /**
      * jLabelDirection = 0 ----> HARIZONTAL .
      * jLabelDirection = 1 ----> VERTICAL .
      */
     private int jLabelDirection = 0;
-    private boolean isJLabelUsed = false;
     /**
      * n : Length of ship .
      */
     private int n = 0;
     private SquaresEditor squaresEditor;
-    private boolean iAmNewSquare = true;
 
     public Frame(MessageManager messageManager, String station, String myName) {
         this.messageManager = messageManager;
@@ -55,6 +51,7 @@ public class Frame extends JLayeredPane implements MouseMotionListener, UI1, Mou
         frame = new JFrame("Battle Ship");
         frame.setLayout(null);
         frame.setSize(new Dimension(WIDTH_OF_FRAME, HEIGHT_OF_FRAME));
+        frame.setLocation(100, 100);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setResizable(false);
         setOpaque(true);
@@ -62,16 +59,18 @@ public class Frame extends JLayeredPane implements MouseMotionListener, UI1, Mou
         frame.addMouseMotionListener(this);
         frame.addMouseListener(this);
 
+        messageManager.setFrame(this);
+        messageManager.sendMyName(myName);
+
         createSquares();
-        orderingJPanel = new OrderingJPanel(mySquares, sentence);
+
+        orderingJPanel = new OrderingJPanel(mySquares, "Please Arrange your Field.");
         chatJPanel = new ChatJPanel();
-        shipsJPanel = new ShipsJPanel(this, messageManager, myName);
-        createJLabel();
+        shipsJPanel = new ShipsJPanel(this, messageManager);
         add(orderingJPanel, 0);
         add(chatJPanel, 0);
         add(shipsJPanel, 0);
         squaresEditor = new SquaresEditor(mySquares);
-        frame.revalidate();
         frame.setVisible(true);
     }
 
@@ -94,17 +93,18 @@ public class Frame extends JLayeredPane implements MouseMotionListener, UI1, Mou
         } catch (IOException e) {
             e.printStackTrace();
         }
-        add(jLabel, new Integer(2), 1);
+        add(jLabel, 2, 1);
     }
 
-    private void removeJLabel() {
+    @Override
+    public void removeJLabel() {
         remove(jLabel);
     }
 
     @Override
     public void boundJLabel(int direction, int n) {
+        createJLabel();
         jLabelDirection = direction;
-        isJLabelUsed = false;
         this.n = n;
         switch (direction) {
             case HARIZONTAL:
@@ -120,22 +120,16 @@ public class Frame extends JLayeredPane implements MouseMotionListener, UI1, Mou
     public void reset() {
         for (int i = 0; i < LEN; i++) {
             for (int j = 0; j < LEN; j++) {
-                mySquares[i][j].fill(false);
+                mySquares[i][j].clear();
             }
         }
         repaint();
     }
 
     @Override
-    public void setIAmNewSquare(boolean bool) {
-        iAmNewSquare = bool;
-    }
-
-    @Override
     public void startGame() {
-        isGameStarted = true;
+        gameStarting = true;
         removeJLabel();
-        messageManager.setFrame(this);
         if (station.equals(SERVER))
             setMyTurn(true);
         else
@@ -143,11 +137,10 @@ public class Frame extends JLayeredPane implements MouseMotionListener, UI1, Mou
     }
 
     @Override
-    public void impartMySquares(int i, int j) {
+    public void destroyMyShips(int i, int j) {
         try {
             if (mySquares[i][j].isFill()) {
-                mySquares[i][j].destroy(true);
-                mySquares[i][j].setText("#");
+                mySquares[i][j].destroy();
                 messageManager.sendLocation(i, j, 1);
             } else if (mySquares[i][j].isDestroyed()) {
 
@@ -163,10 +156,9 @@ public class Frame extends JLayeredPane implements MouseMotionListener, UI1, Mou
     }
 
     @Override
-    public void impartOpponentSquares(int i, int j, int condition) {
+    public void destroyOpponentShips(int i, int j, int condition) {
         if (condition == 1) {
-            opponentSquares[i][j].destroy(true);
-            opponentSquares[i][j].setText("#");
+            opponentSquares[i][j].destroy();
         } else {
             opponentSquares[i][j].setText("*");
         }
@@ -185,6 +177,34 @@ public class Frame extends JLayeredPane implements MouseMotionListener, UI1, Mou
             }
             setMyTurn(false);
         }
+    }
+
+    @Override
+    public void setMyTurn(boolean bool) {
+        myTurn = bool;
+        remove(orderingJPanel);
+        if (myTurn) {
+            orderingJPanel = new OrderingJPanel(opponentSquares, "Your Turn");
+        } else {
+            orderingJPanel = new OrderingJPanel(mySquares, opponentName + "'s Turn");
+        }
+        add(orderingJPanel, 0);
+        frame.revalidate();
+    }
+
+    @Override
+    public String getMyName() {
+        return myName;
+    }
+
+    @Override
+    public void setOpponentName(String username) {
+        opponentName = username;
+    }
+
+    @Override
+    public String getOpponentName() {
+        return opponentName;
     }
 
     @Override
@@ -207,9 +227,9 @@ public class Frame extends JLayeredPane implements MouseMotionListener, UI1, Mou
     public void mouseClicked(MouseEvent e) {
         new Thread() {
             public void run() {
-                if (isGameStarted) {
+                if (gameStarting) {
                     if (myTurn) {
-                        messageManager.sendLocation((e.getY() - S_Y - 30) / SIDE_LENGTH, (e.getX() - S_X) / SIDE_LENGTH, 3);
+                        sendClickedPoint(e);
                     } else {
 
                     }
@@ -218,12 +238,10 @@ public class Frame extends JLayeredPane implements MouseMotionListener, UI1, Mou
                     squaresEditor.setmY(e.getY());
                     squaresEditor.setDirection(jLabelDirection);
                     squaresEditor.setN(n);
-                    if (isJLabelUsed || !iAmNewSquare)
-                        return;
                     if (squaresEditor.run()) {
-                        isJLabelUsed = true;
-                        iAmNewSquare = false;
                         shipsJPanel.changeTextOfButton();
+                        removeJLabel();
+                        shipsJPanel.enableButtons();
                         repaint();
                     }
                 }
@@ -251,36 +269,9 @@ public class Frame extends JLayeredPane implements MouseMotionListener, UI1, Mou
 
     }
 
-    public void setMode(boolean mode) {
-        this.mode = mode;
-    }
-
-    public void setSentence(String sentence) {
-        this.sentence = sentence;
-    }
-
-    public boolean getMode() {
-        return mode;
-    }
-
-    public String getSentence() {
-        return sentence;
-    }
-
-    public boolean getIAmNewSquare() {
-        return iAmNewSquare;
-    }
-
-    @Override
-    public void setMyTurn(boolean bool) {
-        myTurn = bool;
-        remove(orderingJPanel);
-        if (myTurn) {
-            orderingJPanel = new OrderingJPanel(opponentSquares, "Your Turn.");
-        } else {
-            orderingJPanel = new OrderingJPanel(mySquares, "Opponent Turn.");
-        }
-        add(orderingJPanel, 0);
-        frame.revalidate();
+    private void sendClickedPoint(MouseEvent e) {
+        if (abstractTurn)
+            messageManager.sendLocation((e.getY() - S_Y - 30) / SIDE_LENGTH, (e.getX() - S_X) / SIDE_LENGTH, 3);
+        abstractTurn = false;
     }
 }

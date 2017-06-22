@@ -1,6 +1,6 @@
-package ir.aut.test.view;
+package ir.aut.test.view.first;
 
-import ir.aut.test.tools.ManagerInterface;
+import ir.aut.test.head.ManagerInterface;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,7 +10,7 @@ import java.awt.event.ActionListener;
 /**
  * Created by Yana on 22/06/2017.
  */
-public class ExpectationJFrame extends JFrame implements EInterface{
+public class ExpectationJFrame extends JFrame implements EInterface {
     private ManagerInterface manager;
     private JTextArea textArea;
     private JButton cancel;

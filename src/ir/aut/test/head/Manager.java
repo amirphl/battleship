@@ -1,10 +1,10 @@
-package ir.aut.test.tools;
+package ir.aut.test.head;
 
 import ir.aut.test.logic.MessageManager;
-import ir.aut.test.view.ConnectionModeFrame;
-import ir.aut.test.view.ExpectationJFrame;
-import ir.aut.test.view.Frame;
-import ir.aut.test.view.ReceivedConnectionsFrame;
+import ir.aut.test.view.first.ConnectionModeFrame;
+import ir.aut.test.view.first.ExpectationJFrame;
+import ir.aut.test.view.second.Frame;
+import ir.aut.test.view.first.ReceivedConnectionsFrame;
 
 import static ir.aut.test.view.Constants.CLIENT;
 import static ir.aut.test.view.Constants.SERVER;
@@ -23,8 +23,6 @@ public class Manager implements ManagerInterface {
 
     public Manager() {
         connectionModeFrame = new ConnectionModeFrame(this);
-//        waitForClient(5236, "gholam");
-//        connectToServer("", 25, "ff");
     }
 
     @Override

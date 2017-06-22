@@ -1,7 +1,7 @@
 package ir.aut.test.testProgram;
 
 import ir.aut.test.logic.MessageManager;
-import ir.aut.test.view.Frame;
+import ir.aut.test.view.second.Frame;
 
 import static ir.aut.test.view.Constants.CLIENT;
 

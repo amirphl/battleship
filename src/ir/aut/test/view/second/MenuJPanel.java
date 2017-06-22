@@ -1,4 +1,4 @@
-package ir.aut.test.view;
+package ir.aut.test.view.second;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,7 +11,6 @@ import static ir.aut.test.view.Constants.*;
 public class MenuJPanel extends JPanel {
 
     public MenuJPanel() {
-//        setLayout(new FlowLayout());
         setSize(new Dimension(WIDTH_OF_MENUJPANEL, HEIGHT_OF_MENUJPANEL));
         setBounds(S_X, S_Y - 80, WIDTH_OF_MENUJPANEL, HEIGHT_OF_MENUJPANEL);
         setOpaque(true);

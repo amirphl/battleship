@@ -1,9 +1,9 @@
-package ir.aut.test.view;
+package ir.aut.test.view.squar;
 
 import java.awt.*;
 
 import static ir.aut.test.view.Constants.FILL_COLOR;
-import static ir.aut.test.view.Constants.IMPART_COLOR;
+import static ir.aut.test.view.Constants.IMPACT_COLOR;
 
 /**
  * Created by Yana on 05/06/2017.
@@ -24,53 +24,43 @@ public class Square {
         this.mY = mY;
     }
 
-    public Square(int id, int mX, int mY, String text) {
-        this(id, mX, mY);
-        this.text = text;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public void setmX(int mX) {
-        this.mX = mX;
-    }
-
-    public void setmY(int mY) {
-        this.mY = mY;
-    }
-
     public void setText(String text) {
         this.text = text;
     }
 
-    public void setBgColor(Color color) {
-        bgColor = color;
+//    public void fill(boolean bool) {
+//        isFill = bool;
+//        if (bool) {
+//            bgColor = FILL_COLOR;
+//        } else {
+//            bgColor = Color.WHITE;
+//        }
+//    }
+
+    public void fill() {
+        isFill = true;
+        bgColor = FILL_COLOR;
     }
 
-    public void fill(boolean bool) {
-        isFill = bool;
-        if (bool) {
-            bgColor = FILL_COLOR;
-            return;
-        } else {
-            bgColor = Color.WHITE;
-        }
+    public void clear() {
+        isFill = false;
+        bgColor = Color.WHITE;
     }
 
-    public void destroy(boolean bool) {
-        isDestroyed = bool;
-        if (bool) {
-            bgColor = IMPART_COLOR;
-            return;
-        } else {
-            bgColor = Color.WHITE;
-        }
-    }
+//    public void destroy(boolean bool) {
+//        isDestroyed = bool;
+//        if (bool) {
+//            bgColor = IMPART_COLOR;
+//            return;
+//        } else {
+//            bgColor = Color.WHITE;
+//        }
+//    }
 
-    public int getId() {
-        return id;
+    public void destroy() {
+        isDestroyed = true;
+        bgColor = IMPACT_COLOR;
+        setText("D");
     }
 
     public int getmX() {

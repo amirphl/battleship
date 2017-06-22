@@ -1,5 +1,7 @@
 package ir.aut.test.logic;
 
+import ir.aut.test.logic.messages.*;
+
 import java.net.Socket;
 import java.net.SocketAddress;
 import java.util.LinkedList;
@@ -109,6 +111,10 @@ public class NetworkHandler extends Thread {
                         case MessageTypes.ACCEPT:
                             AcceptMessage acceptMessage = new AcceptMessage(array);
                             iNetworkHandlerCallback.onMessageReceived(acceptMessage);
+                            break;
+                        case MessageTypes.REQUEST_NAME:
+                            NameMessage nameMessage = new NameMessage(array);
+                            iNetworkHandlerCallback.onMessageReceived(nameMessage);
                             break;
                     }
                 } else if (mReceivedQueue.isEmpty()) {

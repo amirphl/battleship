@@ -1,4 +1,6 @@
-package ir.aut.test.view;
+package ir.aut.test.view.second;
+
+import ir.aut.test.view.squar.Square;
 
 import javax.swing.*;
 import java.awt.*;
@@ -21,7 +23,7 @@ public class OrderingJPanel extends JPanel {
         this.sentence = sentence;
     }
 
-    public OrderingJPanel(Square[][] squares) {
+    private OrderingJPanel(Square[][] squares) {
         this.squares = squares;
         setLayout(null);
         menuJPanel = new MenuJPanel();
@@ -53,22 +55,5 @@ public class OrderingJPanel extends JPanel {
             g.drawLine(x + i * SIDE_LENGTH, y, x + i * SIDE_LENGTH, y + LEN * SIDE_LENGTH);
             g.drawLine(x, y + i * SIDE_LENGTH, x + LEN * SIDE_LENGTH, y + i * SIDE_LENGTH);
         }
-    }
-
-    public void setSquares(Square[][] squares) {
-        this.squares = squares;
-        System.out.println("Squares                 setted .");
-    }
-
-    public void setSentence(String sentence) {
-        this.sentence = sentence;
-    }
-
-    public Square[][] getSquares() {
-        return squares;
-    }
-
-    public String getSentence() {
-        return sentence;
     }
 }

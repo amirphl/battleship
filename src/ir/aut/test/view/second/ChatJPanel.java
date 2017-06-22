@@ -1,4 +1,4 @@
-package ir.aut.test.view;
+package ir.aut.test.view.second;
 
 import javax.swing.*;
 import java.awt.*;
@@ -20,7 +20,5 @@ public class ChatJPanel extends JPanel {
 
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        g.setColor(Color.BLUE);
-//        g.fillRect( );
     }
 }

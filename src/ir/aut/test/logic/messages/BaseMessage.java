@@ -1,4 +1,4 @@
-package ir.aut.test.logic;
+package ir.aut.test.logic.messages;
 
 /**
  * Created by Yana on 03/06/2017.

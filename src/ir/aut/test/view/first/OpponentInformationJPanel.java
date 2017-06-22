@@ -1,4 +1,4 @@
-package ir.aut.test.view;
+package ir.aut.test.view.first;
 
 import javax.swing.*;
 import java.awt.*;
@@ -8,7 +8,7 @@ import java.awt.event.ActionListener;
 /**
  * Created by Yana on 21/06/2017.
  */
-public class OpponentInformationsJPanel extends JPanel {
+public class OpponentInformationJPanel extends JPanel {
 
     private RCInterface receivedConnectionsFrame;
     private String name;
@@ -17,7 +17,7 @@ public class OpponentInformationsJPanel extends JPanel {
     private JButton accept;
     private JButton reject;
 
-    public OpponentInformationsJPanel(String name, String ip, int code, RCInterface receivedConnectionsFrame) {
+    public OpponentInformationJPanel(String name, String ip, int code, RCInterface receivedConnectionsFrame) {
         this.name = name;
         this.ip = ip;
         this.code = code;

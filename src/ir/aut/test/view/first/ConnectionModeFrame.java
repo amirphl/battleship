@@ -1,13 +1,10 @@
-package ir.aut.test.view;
+package ir.aut.test.view.first;
 
-import ir.aut.test.tools.ManagerInterface;
+import ir.aut.test.head.ManagerInterface;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
+import java.awt.event.*;
 
 /**
  * Created by Yana on 20/06/2017.
@@ -29,6 +26,7 @@ public class ConnectionModeFrame extends JFrame {
     private JButton start;
     private JButton exit;
     private Font font;
+    private int p;
 
     public ConnectionModeFrame(ManagerInterface manager) {
         this.manager = manager;
@@ -39,10 +37,15 @@ public class ConnectionModeFrame extends JFrame {
         setSize(500, 300);
         setLocation(200, 200);
         font = new Font("SanSerif", Font.PLAIN, 18);
+        JTextArea textArea = new JTextArea("Name:");
+        textArea.setFont(font);
+        add(textArea);
         TextHandler textHandler = new TextHandler();
+        FocusHandler focusHandler = new FocusHandler();
         name = new JTextField("Type your name here", 30);
         name.setFont(font);
         name.addActionListener(textHandler);
+        name.addFocusListener(focusHandler);
         add(name);
         RadioButtonHandler radioButtonHandler = new RadioButtonHandler();
         host = new JRadioButton("Host", true);
@@ -65,6 +68,9 @@ public class ConnectionModeFrame extends JFrame {
         portH.addActionListener(textHandler);
         portG.addActionListener(textHandler);
         ip.addActionListener(textHandler);
+        portH.addFocusListener(focusHandler);
+        portG.addFocusListener(focusHandler);
+        ip.addFocusListener(focusHandler);
         add(host);
         add(portH);
         add(guest);
@@ -82,14 +88,27 @@ public class ConnectionModeFrame extends JFrame {
         setVisible(true);
     }
 
+    private void fillP(int n) {
+        switch (n) {
+            case 0:
+                p = Integer.valueOf(playerPort);
+                break;
+            case 1:
+                p = Integer.valueOf(opponentPort);
+                break;
+        }
+        if (p < 0 || p > 65535)
+            throw new NumberFormatException();
+    }
+
     private class TextHandler implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
             new Thread() {
                 public void run() {
-                    if (e.getSource() == name)
+                    if (e.getSource() == name) {
                         playerName = e.getActionCommand();
-                    else if (e.getSource() == portH) {
+                    } else if (e.getSource() == portH) {
                         playerPort = e.getActionCommand();
                     } else if (e.getSource() == portG) {
                         opponentPort = e.getActionCommand();
@@ -128,32 +147,51 @@ public class ConnectionModeFrame extends JFrame {
             new Thread() {
                 public void run() {
                     if (e.getSource() == start) {
-                        int p;
                         if (host.isSelected()) {
                             try {
-                                System.out.println(playerPort);
-                                p = Integer.valueOf(playerPort);
+                                fillP(0);
                             } catch (NumberFormatException e1) {
                                 JOptionPane.showMessageDialog(null, "Incorrect Format Fot Port.", "Error", JOptionPane.ERROR_MESSAGE);
                                 return;
                             }
                             manager.waitForClient(p, playerName);
-                            setVisible(false);
-                            dispose();
                         } else {
                             try {
-                                p = Integer.valueOf(playerPort);
+                                fillP(1);
                             } catch (NumberFormatException e1) {
                                 JOptionPane.showMessageDialog(null, "Incorrect Format Fot Port.", "Error", JOptionPane.ERROR_MESSAGE);
                                 return;
                             }
                             manager.connectToServer(opponentIp, p, playerName);
-                            setVisible(false);
-                            dispose();
                         }
+                        setVisible(false);
+                        dispose();
                     } else {
                         setVisible(false);
                         dispose();
+                    }
+                }
+            }.start();
+        }
+    }
+
+    public class FocusHandler implements FocusListener {
+        @Override
+        public void focusGained(FocusEvent e) {
+        }
+
+        @Override
+        public void focusLost(FocusEvent e) {
+            new Thread() {
+                public void run() {
+                    if (e.getSource() == name) {
+                        playerName = name.getText();
+                    } else if (e.getSource() == portH) {
+                        playerPort = portH.getText();
+                    } else if (e.getSource() == portG) {
+                        opponentPort = portG.getText();
+                    } else {
+                        opponentIp = ip.getText();
                     }
                 }
             }.start();

@@ -1,4 +1,4 @@
-package ir.aut.test.view;
+package ir.aut.test.view.squar;
 
 import static ir.aut.test.view.Constants.*;
 
@@ -27,10 +27,13 @@ public class SquaresEditor {
         findRawAndColumn();
         if (raw == -1 || column == -1)
             return false;
-        if (direction == HARIZONTAL)
-            fillInHarizontal();
-        else if (direction == VERTICAL)
-            fillInVertical();
+        if (direction == HARIZONTAL) {
+            if (!fillInHarizontal())
+                return false;
+        } else if (direction == VERTICAL) {
+            if (!fillInVertical())
+                return false;
+        }
         raw = -1;
         column = -1;
         return true;
@@ -47,22 +50,20 @@ public class SquaresEditor {
         }
     }
 
-    private void fillInHarizontal() {
+    private boolean fillInHarizontal() {
         for (int i = 0; i < n; i++) {
-            if (column >= LEN)
-                return;
-            if (isFill(raw, column)) {
-                return;
-            }
+            if (column >= LEN || isFill(raw, column))
+                return false;
             column += 1;
         }
         fillMyRectangleInHarizontalMode();
+        return true;
     }
 
     private void fillMyRectangleInHarizontalMode() {
         column -= n;
         for (int i = 0; i < n; i++) {
-            squares[raw][column++].fill(true);
+            squares[raw][column++].fill();
         }
     }
 
@@ -82,27 +83,21 @@ public class SquaresEditor {
         return false;
     }
 
-    private void fillInVertical() {
+    private boolean fillInVertical() {
         for (int j = 0; j < n; j++) {
-            if (raw >= LEN)
-                return;
-            if (isFill(raw, column)) {
-                return;
-            }
+            if (raw >= LEN || isFill(raw, column))
+                return false;
             raw += 1;
         }
         fillMyRectangleInVerticalMode();
+        return true;
     }
 
     private void fillMyRectangleInVerticalMode() {
         raw -= n;
         for (int i = 0; i < n; i++) {
-            squares[raw++][column].fill(true);
+            squares[raw++][column].fill();
         }
-    }
-
-    public void setSquares(Square[][] squares) {
-        this.squares = squares;
     }
 
     public void setmX(int mX) {
@@ -119,25 +114,5 @@ public class SquaresEditor {
 
     public void setN(int n) {
         this.n = n;
-    }
-
-    public Square[][] getSquares() {
-        return squares;
-    }
-
-    public int getmX() {
-        return mX;
-    }
-
-    public int getmY() {
-        return mY;
-    }
-
-    public int getDirection() {
-        return direction;
-    }
-
-    public int getN() {
-        return n;
     }
 }
