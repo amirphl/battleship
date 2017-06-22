@@ -9,12 +9,10 @@ import java.util.Date;
  */
 public class ChatJPanel extends JPanel {
 
-    private String myName;
     private String opponentName;
     private JTextArea textArea;
 
-    public ChatJPanel(String myName, String opponentName) {
-        this.myName = myName;
+    public ChatJPanel(String opponentName) {
         this.opponentName = opponentName;
         setLayout(new GridLayout(300, 1, 10, 10));
     }

@@ -17,7 +17,6 @@ import static ir.aut.test.view.Constants.WIDTH_OF_ORDERINGJPANEL;
 public class ChatJFrame extends JPanel implements UI3 {
 
     private MessageManager messageManager;
-    private String myName;
     private String opponentName;
     private JScrollPane scrollPane;
     private ChatJPanel chatJPanel;
@@ -25,9 +24,8 @@ public class ChatJFrame extends JPanel implements UI3 {
     private JTextArea textArea;
     private JTextField textField;
 
-    public ChatJFrame(MessageManager messageManager, String myName, String opponentName) {
+    public ChatJFrame(MessageManager messageManager, String opponentName) {
         this.messageManager = messageManager;
-        this.myName = myName;
         this.opponentName = opponentName;
         messageManager.setChatJFrame(this);
         setLayout(null);
@@ -46,7 +44,7 @@ public class ChatJFrame extends JPanel implements UI3 {
         add(textArea);
 
         textField = new JTextField("Type here ...");
-        textField.setBounds(1, HEIGHT_OF_FRAME - 80, 220, 30);
+        textField.setBounds(5, HEIGHT_OF_FRAME - 120, 260, 30);
         textField.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         textField.setOpaque(true);
         textField.setFont(font);
@@ -54,15 +52,16 @@ public class ChatJFrame extends JPanel implements UI3 {
         add(textField);
 
         JButton send = new JButton("Send");
-        send.setBounds(225, HEIGHT_OF_FRAME - 80, 60, 30);
+        send.setBounds(150, HEIGHT_OF_FRAME - 80, 100, 30);
         send.addActionListener(new Handler());
+        send.setSelected(false);
         add(send);
 
-        chatJPanel = new ChatJPanel(myName, opponentName);
+        chatJPanel = new ChatJPanel(opponentName);
         scrollPane = new JScrollPane(chatJPanel);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        scrollPane.setBounds(5, 40, WIDTH_OF_FRAME - WIDTH_OF_ORDERINGJPANEL - 25, HEIGHT_OF_FRAME - 120);
+        scrollPane.setBounds(5, 40, WIDTH_OF_FRAME - WIDTH_OF_ORDERINGJPANEL - 25, HEIGHT_OF_FRAME - 160);
         add(scrollPane);
         revalidate();
         repaint();

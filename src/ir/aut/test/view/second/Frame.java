@@ -60,8 +60,12 @@ public class Frame extends JLayeredPane implements MouseMotionListener, UI1, Mou
         frame.addMouseMotionListener(this);
         frame.addMouseListener(this);
 
-        messageManager.setFrame(this);
-        messageManager.sendMyName(myName);
+        new Thread() {
+            public void run() {
+                messageManager.setFrame(Frame.this);
+                messageManager.sendMyName(myName);
+            }
+        }.start();
 
         createSquares();
 
@@ -202,7 +206,7 @@ public class Frame extends JLayeredPane implements MouseMotionListener, UI1, Mou
     @Override
     public void setOpponentName(String username) {
         opponentName = username;
-        chatJFrame = new ChatJFrame(messageManager, myName, opponentName);
+        chatJFrame = new ChatJFrame(messageManager, opponentName);
         add(chatJFrame, 0);
         revalidate();
     }
