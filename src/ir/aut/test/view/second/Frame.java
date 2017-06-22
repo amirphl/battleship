@@ -25,14 +25,14 @@ public class Frame extends JLayeredPane implements MouseMotionListener, UI1, Mou
     private String myName = " ";
     private String opponentName = " ";
     private OrderingJPanel orderingJPanel;
-    private ChatJPanel chatJPanel;
+    private ChatJFrame chatJFrame;
     private ShipsJPanel shipsJPanel;
     private JLabel jLabel;
     private Square[][] mySquares;
     private Square[][] opponentSquares;
     private boolean myTurn = true;
     private boolean abstractTurn = true;
-    private boolean gameStarting = false;
+    private boolean matchCondition = false;
     /**
      * jLabelDirection = 0 ----> HARIZONTAL .
      * jLabelDirection = 1 ----> VERTICAL .
@@ -43,6 +43,7 @@ public class Frame extends JLayeredPane implements MouseMotionListener, UI1, Mou
      */
     private int n = 0;
     private SquaresEditor squaresEditor;
+    private int numberOfDestroyedUnits = 0;
 
     public Frame(MessageManager messageManager, String station, String myName) {
         this.messageManager = messageManager;
@@ -65,10 +66,8 @@ public class Frame extends JLayeredPane implements MouseMotionListener, UI1, Mou
         createSquares();
 
         orderingJPanel = new OrderingJPanel(mySquares, "Please Arrange your Field.");
-        chatJPanel = new ChatJPanel();
         shipsJPanel = new ShipsJPanel(this, messageManager);
         add(orderingJPanel, 0);
-        add(chatJPanel, 0);
         add(shipsJPanel, 0);
         squaresEditor = new SquaresEditor(mySquares);
         frame.setVisible(true);
@@ -128,8 +127,9 @@ public class Frame extends JLayeredPane implements MouseMotionListener, UI1, Mou
 
     @Override
     public void startGame() {
-        gameStarting = true;
+        matchCondition = true;
         removeJLabel();
+        new Terminator().start();
         if (station.equals(SERVER))
             setMyTurn(true);
         else
@@ -159,6 +159,7 @@ public class Frame extends JLayeredPane implements MouseMotionListener, UI1, Mou
     public void destroyOpponentShips(int i, int j, int condition) {
         if (condition == 1) {
             opponentSquares[i][j].destroy();
+            numberOfDestroyedUnits++;
         } else {
             opponentSquares[i][j].setText("*");
         }
@@ -177,6 +178,7 @@ public class Frame extends JLayeredPane implements MouseMotionListener, UI1, Mou
             }
             setMyTurn(false);
         }
+        abstractTurn = true;
     }
 
     @Override
@@ -200,6 +202,9 @@ public class Frame extends JLayeredPane implements MouseMotionListener, UI1, Mou
     @Override
     public void setOpponentName(String username) {
         opponentName = username;
+        chatJFrame = new ChatJFrame(messageManager, myName, opponentName);
+        add(chatJFrame, 0);
+        revalidate();
     }
 
     @Override
@@ -227,7 +232,7 @@ public class Frame extends JLayeredPane implements MouseMotionListener, UI1, Mou
     public void mouseClicked(MouseEvent e) {
         new Thread() {
             public void run() {
-                if (gameStarting) {
+                if (matchCondition) {
                     if (myTurn) {
                         sendClickedPoint(e);
                     } else {
@@ -273,5 +278,34 @@ public class Frame extends JLayeredPane implements MouseMotionListener, UI1, Mou
         if (abstractTurn)
             messageManager.sendLocation((e.getY() - S_Y - 30) / SIDE_LENGTH, (e.getX() - S_X) / SIDE_LENGTH, 3);
         abstractTurn = false;
+    }
+
+    private class Terminator extends Thread {
+        public void run() {
+            while (matchCondition) {
+                if (numberOfDestroyedUnits == 20) {
+                    win();
+                    break;
+                } else {
+                    try {
+                        Thread.sleep(150);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+    }
+
+    public void win() {
+        matchCondition = false;
+        JOptionPane.showMessageDialog(null, "Congratulation !!! You won the match ...", "Game ended.", JOptionPane.INFORMATION_MESSAGE);
+        messageManager.sendTerminate();
+    }
+
+    @Override
+    public void loose() {
+        matchCondition = false;
+        JOptionPane.showMessageDialog(null, "How bad !!! You lost ...", "Game ended.", JOptionPane.INFORMATION_MESSAGE);
     }
 }

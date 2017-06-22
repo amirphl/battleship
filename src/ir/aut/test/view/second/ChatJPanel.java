@@ -2,23 +2,40 @@ package ir.aut.test.view.second;
 
 import javax.swing.*;
 import java.awt.*;
-
-import static ir.aut.test.view.Constants.HEIGHT_OF_FRAME;
-import static ir.aut.test.view.Constants.WIDTH_OF_FRAME;
-import static ir.aut.test.view.Constants.WIDTH_OF_ORDERINGJPANEL;
+import java.util.Date;
 
 /**
- * Created by Yana on 05/06/2017.
+ * Created by Yana on 22/06/2017.
  */
 public class ChatJPanel extends JPanel {
-    public ChatJPanel() {
-        setBorder(BorderFactory.createLineBorder(Color.orange));
-        setSize(new Dimension(WIDTH_OF_FRAME - WIDTH_OF_ORDERINGJPANEL - 1, HEIGHT_OF_FRAME - 40));
-        setBounds(WIDTH_OF_ORDERINGJPANEL + 1, 0, WIDTH_OF_FRAME - WIDTH_OF_ORDERINGJPANEL - 20, HEIGHT_OF_FRAME - 40);
-        setOpaque(true);
+
+    private String myName;
+    private String opponentName;
+    private JTextArea textArea;
+
+    public ChatJPanel(String myName, String opponentName) {
+        this.myName = myName;
+        this.opponentName = opponentName;
+        setLayout(new GridLayout(300, 1, 10, 10));
     }
 
-    public void paintComponent(Graphics g) {
-        super.paintComponent(g);
+    public void addText(String text, int player) {
+        long time = System.currentTimeMillis();
+        String t = new Date(time).toString().replace(":", "-");
+        switch (player) {
+            case 1:
+                textArea = new JTextArea("You :" + "\n" + text + "\n" + t);
+                break;
+            case 2:
+                textArea = new JTextArea(opponentName + " :" + "\n" + text + "\n" + t);
+                break;
+        }
+        textArea.setDisabledTextColor(Color.BLACK);
+        textArea.setFont(new Font("SanSerif", Font.ITALIC, 16));
+        textArea.setBackground(Color.YELLOW);
+        textArea.setEnabled(false);
+        textArea.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        add(textArea);
+        revalidate();
     }
 }

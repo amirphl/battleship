@@ -1,8 +1,5 @@
 package ir.aut.test.logic.messages;
 
-import ir.aut.test.logic.messages.BaseMessage;
-import ir.aut.test.logic.messages.MessageTypes;
-
 import java.nio.ByteBuffer;
 
 /**

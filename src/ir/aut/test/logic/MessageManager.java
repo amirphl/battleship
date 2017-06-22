@@ -5,6 +5,7 @@ import ir.aut.test.view.first.EInterface;
 import ir.aut.test.view.first.RCInterface;
 import ir.aut.test.view.second.UI1;
 import ir.aut.test.view.second.UI2;
+import ir.aut.test.view.second.UI3;
 
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
@@ -24,6 +25,7 @@ public class MessageManager implements ServerSocketHandler.IServerSocketHandlerC
     private int index = 0;
     private UI1 frame;
     private UI2 shipsJPanel;
+    private UI3 chatJFrame;
     private RCInterface receivedConnectionsFrame;
     private EInterface expectationJFrame;
 
@@ -70,6 +72,14 @@ public class MessageManager implements ServerSocketHandler.IServerSocketHandlerC
         mNetworkHandlerList.get(index).sendMessage(new NameMessage(username));
     }
 
+    public void sendTerminate() {
+        mNetworkHandlerList.get(index).sendMessage(new TerminateMessage());
+    }
+
+    public void sendConversation(String text) {
+        mNetworkHandlerList.get(index).sendMessage(new ConversationMessage(text));
+    }
+
     /**
      * Accepts which netWorkHandler to connect and communicate.
      */
@@ -112,8 +122,20 @@ public class MessageManager implements ServerSocketHandler.IServerSocketHandlerC
         frame.setOpponentName(message.getUsername());
     }
 
+    private void consumeTerminate(TerminateMessage message) {
+        frame.loose();
+    }
+
+    private void consumeConversation(ConversationMessage message) {
+        chatJFrame.addText(message.getText(), 2);
+    }
+
     public void setShipsJPanel(UI2 shipsJPanel) {
         this.shipsJPanel = shipsJPanel;
+    }
+
+    public void setChatJFrame(UI3 chatJFrame) {
+        this.chatJFrame = chatJFrame;
     }
 
     public void setFrame(UI1 frame) {
@@ -149,6 +171,12 @@ public class MessageManager implements ServerSocketHandler.IServerSocketHandlerC
                 break;
             case MessageTypes.REQUEST_NAME:
                 consumeOpponentName((NameMessage) baseMessage);
+                break;
+            case MessageTypes.TERMINATE:
+                consumeTerminate((TerminateMessage) baseMessage);
+                break;
+            case MessageTypes.CONVERSATION:
+                consumeConversation((ConversationMessage) baseMessage);
                 break;
         }
     }

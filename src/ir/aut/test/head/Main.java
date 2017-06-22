@@ -2,7 +2,6 @@ package ir.aut.test.head;
 
 import ir.aut.test.testProgram.ClientThread;
 import ir.aut.test.testProgram.ServerThread;
-import ir.aut.test.head.Manager;
 
 
 public class Main {

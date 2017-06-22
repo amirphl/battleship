@@ -16,7 +16,7 @@ public class NetworkHandler extends Thread {
     private Queue<byte[]> mReceivedQueue;
     private ReceivedMessageConsumer mConsumerThread;
     private INetworkHandlerCallback iNetworkHandlerCallback;
-    private final int MAXIMUM_SIZE = 100;
+    private final int MAXIMUM_SIZE = 300;
     private boolean flag = true;
 
     public NetworkHandler(SocketAddress socketAddress, INetworkHandlerCallback iNetworkHandlerCallback) {
@@ -115,6 +115,14 @@ public class NetworkHandler extends Thread {
                         case MessageTypes.REQUEST_NAME:
                             NameMessage nameMessage = new NameMessage(array);
                             iNetworkHandlerCallback.onMessageReceived(nameMessage);
+                            break;
+                        case MessageTypes.TERMINATE:
+                            TerminateMessage terminateMessage = new TerminateMessage(array);
+                            iNetworkHandlerCallback.onMessageReceived(terminateMessage);
+                            break;
+                        case MessageTypes.CONVERSATION:
+                            ConversationMessage conversationMessage = new ConversationMessage(array);
+                            iNetworkHandlerCallback.onMessageReceived(conversationMessage);
                             break;
                     }
                 } else if (mReceivedQueue.isEmpty()) {

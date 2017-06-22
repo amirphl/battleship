@@ -60,7 +60,7 @@ public class Square {
     public void destroy() {
         isDestroyed = true;
         bgColor = IMPACT_COLOR;
-        setText("D");
+        setText("destroyed");
     }
 
     public int getmX() {

@@ -219,14 +219,18 @@ public class ShipsJPanel extends JPanel implements UI2 {
                             new Thread() {
                                 public void run() {
                                     while (!isInterrupted) {
-                                        System.out.print("");
                                         if (isOpponentReady()) {
                                             ui1.startGame();
                                             startGame();
                                             isInterrupted = true;
                                             isReady = false;
                                             break;
-                                        }
+                                        }else
+                                            try {
+                                                Thread.sleep(150);
+                                            } catch (InterruptedException e1) {
+                                                e1.printStackTrace();
+                                            }
                                     }
                                 }
                             }.start();

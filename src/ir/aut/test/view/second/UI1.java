@@ -24,4 +24,6 @@ public interface UI1 {
     void setOpponentName(String username);
 
     String getOpponentName();
+
+    void loose();
 }
