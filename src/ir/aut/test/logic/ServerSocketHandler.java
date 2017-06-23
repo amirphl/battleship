@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import static ir.aut.test.view.Constants.SERVER;
+
 /**
  * Created by Yana on 03/06/2017.
  * run
@@ -20,7 +22,7 @@ public class ServerSocketHandler extends Thread {
     public ServerSocketHandler(int port, NetworkHandler.INetworkHandlerCallback iNetworkHandlerCallback,
                                IServerSocketHandlerCallback iServerSocketHandlerCallback) {
         try {
-            serverSocket = new ServerSocket(port, 100);
+            serverSocket = new ServerSocket(port, 200);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -40,9 +42,10 @@ public class ServerSocketHandler extends Thread {
             try {
                 System.out.println("Server : waiting for joining client.");
                 socket = serverSocket.accept();
-                System.out.println("Server : client joined");
+                System.out.println("Server : client joined.");
                 if (socket != null) {
                     networkHandler = new NetworkHandler(socket, iNetworkHandlerCallback);
+                    networkHandler.start();
                     iServerSocketHandlerCallback.onNewConnectionReceived(networkHandler);
                 } else
                     sleep(100);

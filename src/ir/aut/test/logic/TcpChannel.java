@@ -7,6 +7,8 @@ import java.net.Socket;
 import java.net.SocketAddress;
 import java.net.SocketException;
 
+import static ir.aut.test.view.Constants.CLIENT;
+
 /**
  * Created by Yana on 03/06/2017.
  */
@@ -19,7 +21,7 @@ public class TcpChannel {
         try {
             System.out.println("Client :client trying to join.");
             mSocket = new Socket();
-            mSocket.connect(socketAddress, timeout);
+            mSocket.connect(socketAddress);
             setTimeOut(timeout);
             System.out.println("Client :client connected to server.");
             getStreams();

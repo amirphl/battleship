@@ -1,11 +1,11 @@
 package ir.aut.test.logic;
 
 import ir.aut.test.logic.messages.*;
-import ir.aut.test.view.first.EInterface;
-import ir.aut.test.view.first.RCInterface;
-import ir.aut.test.view.second.UI1;
-import ir.aut.test.view.second.UI2;
-import ir.aut.test.view.second.UI3;
+import ir.aut.test.view.first.IWaitingJFrameCallBack;
+import ir.aut.test.view.first.RCFCallBack;
+import ir.aut.test.view.second.IFrameCallBack;
+import ir.aut.test.view.second.IShipsJPanelCallBack;
+import ir.aut.test.view.second.IChatJFrameCallBack;
 
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
@@ -23,11 +23,11 @@ public class MessageManager implements ServerSocketHandler.IServerSocketHandlerC
     private ServerSocketHandler mServerSocketHandler;
     private List<NetworkHandler> mNetworkHandlerList;
     private int index = 0;
-    private UI1 frame;
-    private UI2 shipsJPanel;
-    private UI3 chatJFrame;
-    private RCInterface receivedConnectionsFrame;
-    private EInterface expectationJFrame;
+    private IFrameCallBack iFrameCallBack;
+    private IShipsJPanelCallBack iShipsJPanelCallBack;
+    private IChatJFrameCallBack iChatJFrameCallBack;
+    private RCFCallBack rcfCallBack;
+    private IWaitingJFrameCallBack iWaitingJFrameCallBack;
 
     /**
      * Instantiate server socket handler and start it. (Call this constructor in host mode)
@@ -56,8 +56,8 @@ public class MessageManager implements ServerSocketHandler.IServerSocketHandlerC
         mNetworkHandlerList.get(index).sendMessage(new RequestLoginMessage(username, password));
     }
 
-    public void sendReadinessCondition(boolean bool) {
-        mNetworkHandlerList.get(index).sendMessage(new ReadinessMessage(bool));
+    public void sendReadinessCondition(boolean b) {
+        mNetworkHandlerList.get(index).sendMessage(new ReadinessMessage(b));
     }
 
     public void sendLocation(int i, int j, int condition) {
@@ -66,6 +66,10 @@ public class MessageManager implements ServerSocketHandler.IServerSocketHandlerC
 
     public void sendAccept() {
         mNetworkHandlerList.get(index).sendMessage(new AcceptMessage());
+    }
+
+    public void sendReject() {
+        mNetworkHandlerList.get(index).sendMessage(new RejectMessage());
     }
 
     public void sendMyName(String username) {
@@ -80,19 +84,27 @@ public class MessageManager implements ServerSocketHandler.IServerSocketHandlerC
         mNetworkHandlerList.get(index).sendMessage(new ConversationMessage(text));
     }
 
+    public void sendIP(String username, String ip) {
+        mNetworkHandlerList.get(index).sendMessage(new IPMessage(username, ip));
+    }
+
     /**
      * Accepts which netWorkHandler to connect and communicate.
      */
     public void acceptRequest(int i) {
+        NetworkHandler handler = mNetworkHandlerList.get(i);
+        mNetworkHandlerList.remove(i);
+        for (int j = 0; j < mNetworkHandlerList.size(); j++)
+            rejectRequest(j);
+        mNetworkHandlerList.clear();
+        mNetworkHandlerList.add(handler);
+        index = 0;
+        sendAccept();
+    }
+
+    public void rejectRequest(int i) {
         index = i;
-        try {
-            mNetworkHandlerList.get(i).start();
-            sendAccept();
-        } catch (IndexOutOfBoundsException e) {
-            e.printStackTrace();
-            index = 0;
-            mNetworkHandlerList.get(0).start();
-        }
+        sendReject();
     }
 
     /**
@@ -104,50 +116,58 @@ public class MessageManager implements ServerSocketHandler.IServerSocketHandlerC
     }
 
     private void consumeReadiness(ReadinessMessage message) {
-        shipsJPanel.setOpponentReadiness(message.getReadinessCondition());
+        iShipsJPanelCallBack.setOpponentReadiness(message.getReadinessCondition());
     }
 
     private void consumeLocation(LocationMessage message) {
         if (message.getmCondition() == 3)
-            frame.destroyMyShips(message.getmI(), message.getmJ());
+            iFrameCallBack.destroyMyShips(message.getmI(), message.getmJ());
         else
-            frame.destroyOpponentShips(message.getmI(), message.getmJ(), message.getmCondition());
+            iFrameCallBack.destroyOpponentShips(message.getmI(), message.getmJ(), message.getmCondition());
     }
 
     private void consumeAccept(AcceptMessage message) {
-        expectationJFrame.close();
+        iWaitingJFrameCallBack.close(1);
+    }
+
+    private void consumeReject(RejectMessage message) {
+        iWaitingJFrameCallBack.close(0);
     }
 
     private void consumeOpponentName(NameMessage message) {
-        frame.setOpponentName(message.getUsername());
+        iFrameCallBack.setOpponentName(message.getUsername());
     }
 
     private void consumeTerminate(TerminateMessage message) {
-        frame.loose();
+        iFrameCallBack.loose();
     }
 
     private void consumeConversation(ConversationMessage message) {
-        chatJFrame.addText(message.getText(), 2);
+        iChatJFrameCallBack.addText(message.getText(), 2);
     }
 
-    public void setShipsJPanel(UI2 shipsJPanel) {
-        this.shipsJPanel = shipsJPanel;
+    private void consumeIP(IPMessage message) {
+        rcfCallBack.addIPJPanel(message.getUsername(), message.getIp());
     }
 
-    public void setChatJFrame(UI3 chatJFrame) {
-        this.chatJFrame = chatJFrame;
+    public void setiFrameCallBack(IFrameCallBack iFrameCallBack) {
+        this.iFrameCallBack = iFrameCallBack;
     }
 
-    public void setFrame(UI1 frame) {
-        this.frame = frame;
+    public void setiShipsJPanelCallBack(IShipsJPanelCallBack iShipsJPanelCallBack) {
+        this.iShipsJPanelCallBack = iShipsJPanelCallBack;
     }
 
-    public void setReceivedConnectionsFrame(RCInterface receivedConnectionsFrame) {
-        this.receivedConnectionsFrame = receivedConnectionsFrame;
+    public void setiChatJFrameCallBack(IChatJFrameCallBack iChatJFrameCallBack) {
+        this.iChatJFrameCallBack = iChatJFrameCallBack;
     }
 
-    public void setExpectationJFrame(EInterface expectationJFrame) {
-        this.expectationJFrame = expectationJFrame;
+    public void setRcfCallBack(RCFCallBack rcfCallBack) {
+        this.rcfCallBack = rcfCallBack;
+    }
+
+    public void setIWaitingJFrameCallBack(IWaitingJFrameCallBack IWaitingJFrameCallBack) {
+        this.iWaitingJFrameCallBack = IWaitingJFrameCallBack;
     }
 
     /**
@@ -169,6 +189,9 @@ public class MessageManager implements ServerSocketHandler.IServerSocketHandlerC
             case MessageTypes.ACCEPT:
                 consumeAccept((AcceptMessage) baseMessage);
                 break;
+            case MessageTypes.REJECT:
+                consumeReject((RejectMessage) baseMessage);
+                break;
             case MessageTypes.REQUEST_NAME:
                 consumeOpponentName((NameMessage) baseMessage);
                 break;
@@ -177,6 +200,9 @@ public class MessageManager implements ServerSocketHandler.IServerSocketHandlerC
                 break;
             case MessageTypes.CONVERSATION:
                 consumeConversation((ConversationMessage) baseMessage);
+                break;
+            case MessageTypes.IP:
+                consumeIP((IPMessage) baseMessage);
                 break;
         }
     }
@@ -192,11 +218,6 @@ public class MessageManager implements ServerSocketHandler.IServerSocketHandlerC
     @Override
     public void onNewConnectionReceived(NetworkHandler networkHandler) {
         mNetworkHandlerList.add(networkHandler);
-        new Thread() {
-            public void run() {
-                receivedConnectionsFrame.addJPanel("", "");
-            }
-        }.start();
         System.out.println("networkHandler added to list");
     }
 }

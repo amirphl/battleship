@@ -2,7 +2,7 @@ package ir.aut.test.head;
 
 import ir.aut.test.logic.MessageManager;
 import ir.aut.test.view.first.ConnectionModeFrame;
-import ir.aut.test.view.first.ExpectationJFrame;
+import ir.aut.test.view.first.WaitingJFrame;
 import ir.aut.test.view.second.Frame;
 import ir.aut.test.view.first.ReceivedConnectionsFrame;
 
@@ -16,7 +16,7 @@ public class Manager implements ManagerInterface {
     private ConnectionModeFrame connectionModeFrame;
     private String playerName;
     private ReceivedConnectionsFrame receivedConnectionsFrame;
-    private ExpectationJFrame expectationJFrame;
+    private WaitingJFrame waitingJFrame;
     private MessageManager serverMessageManager;
     private MessageManager clientMessageManager;
     private Frame frame;
@@ -28,9 +28,10 @@ public class Manager implements ManagerInterface {
     @Override
     public void connectToServer(String ip, int port, String playerName) {
         this.playerName = playerName;
-        expectationJFrame = new ExpectationJFrame(this);
         clientMessageManager = new MessageManager(ip, port);
-        clientMessageManager.setExpectationJFrame(expectationJFrame);
+        waitingJFrame = new WaitingJFrame(this);
+        clientMessageManager.setIWaitingJFrameCallBack(waitingJFrame);
+        clientMessageManager.sendIP(playerName, ip);
     }
 
     @Override

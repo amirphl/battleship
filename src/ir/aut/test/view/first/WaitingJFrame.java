@@ -10,22 +10,23 @@ import java.awt.event.ActionListener;
 /**
  * Created by Yana on 22/06/2017.
  */
-public class ExpectationJFrame extends JFrame implements EInterface {
+public class WaitingJFrame extends JFrame implements IWaitingJFrameCallBack {
     private ManagerInterface manager;
     private JTextArea textArea;
     private JButton cancel;
 
-    public ExpectationJFrame(ManagerInterface manager) {
+    public WaitingJFrame(ManagerInterface manager) {
         this.manager = manager;
         setLayout(null);
         setResizable(false);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setTitle("Please Wait ...");
         setSize(400, 150);
-        setLocation(200, 200);
+        setLocation(600, 400);
         textArea = new JTextArea("Waiting for the host to join ...");
         textArea.setFont(new Font("SanSerif", Font.PLAIN, 18));
-        textArea.setBackground(Color.BLACK);
+        textArea.setBackground(Color.YELLOW);
+        textArea.setDisabledTextColor(Color.BLACK);
         textArea.setEnabled(false);
         textArea.setBounds(50, 10, 250, 25);
         textArea.setBorder(BorderFactory.createLineBorder(Color.BLUE));
@@ -44,16 +45,22 @@ public class ExpectationJFrame extends JFrame implements EInterface {
         public void actionPerformed(ActionEvent e) {
             new Thread() {
                 public void run() {
-                    //????????????????????//
+                    setVisible(false);
+                    dispose();
                 }
             }.start();
         }
     }
 
     @Override
-    public void close() {
+    public void close(int i) {
         setVisible(false);
         dispose();
-        manager.startGameC();
+        if (i == 1)
+            manager.startGameC();
+        else {
+            JOptionPane.showMessageDialog(null, "You are rejected by Opponent(Server). try again.", "REJECTED", JOptionPane.ERROR_MESSAGE);
+            System.exit(0);
+        }
     }
 }

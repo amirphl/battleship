@@ -14,7 +14,7 @@ import static ir.aut.test.view.Constants.WIDTH_OF_ORDERINGJPANEL;
 /**
  * Created by Yana on 05/06/2017.
  */
-public class ChatJFrame extends JPanel implements UI3 {
+public class ChatJFrame extends JPanel implements IChatJFrameCallBack {
 
     private MessageManager messageManager;
     private String opponentName;
@@ -23,25 +23,15 @@ public class ChatJFrame extends JPanel implements UI3 {
 
     private JTextArea textArea;
     private JTextField textField;
+    private Font font = new Font("SanSerif", Font.PLAIN, 18);
 
     public ChatJFrame(MessageManager messageManager, String opponentName) {
         this.messageManager = messageManager;
         this.opponentName = opponentName;
-        messageManager.setChatJFrame(this);
+        messageManager.setiChatJFrameCallBack(this);
         setLayout(null);
-        setSize(new Dimension(WIDTH_OF_FRAME - WIDTH_OF_ORDERINGJPANEL - 1, HEIGHT_OF_FRAME - 40));
+//        setSize(new Dimension(WIDTH_OF_FRAME - WIDTH_OF_ORDERINGJPANEL - 1, HEIGHT_OF_FRAME - 40));
         setBounds(WIDTH_OF_ORDERINGJPANEL + 1, 0, WIDTH_OF_FRAME - WIDTH_OF_ORDERINGJPANEL - 20, HEIGHT_OF_FRAME - 40);
-
-        Font font = new Font("SanSerif", Font.PLAIN, 18);
-        textArea = new JTextArea("Chat to " + opponentName);
-        textArea.setBounds(1, 1, 200, 25);
-        textArea.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-        textArea.setOpaque(true);
-        textArea.setFont(font);
-        textArea.setEnabled(false);
-        textArea.setDisabledTextColor(Color.BLACK);
-        textArea.setBackground(Color.YELLOW);
-        add(textArea);
 
         textField = new JTextField("Type here ...");
         textField.setBounds(5, HEIGHT_OF_FRAME - 120, 260, 30);
@@ -64,6 +54,19 @@ public class ChatJFrame extends JPanel implements UI3 {
         scrollPane.setBounds(5, 40, WIDTH_OF_FRAME - WIDTH_OF_ORDERINGJPANEL - 25, HEIGHT_OF_FRAME - 160);
         add(scrollPane);
         revalidate();
+        repaint();
+    }
+
+    public void paintOpponentName(String opponentName) {
+        textArea = new JTextArea("Chat to " + opponentName);
+        textArea.setBounds(1, 1, 200, 25);
+        textArea.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        textArea.setOpaque(true);
+        textArea.setFont(font);
+        textArea.setEnabled(false);
+        textArea.setDisabledTextColor(Color.BLACK);
+        textArea.setBackground(Color.YELLOW);
+        add(textArea);
         repaint();
     }
 

@@ -3,8 +3,8 @@ package ir.aut.test.view.first;
 /**
  * Created by Yana on 21/06/2017.
  */
-public interface RCInterface {
-    void addJPanel(String opponentName, String opponentIP);
+public interface RCFCallBack {
+    void addIPJPanel(String opponentName, String opponentIP);
 
     void acceptRequest(int i);
 

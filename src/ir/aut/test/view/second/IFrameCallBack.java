@@ -3,8 +3,7 @@ package ir.aut.test.view.second;
 /**
  * Created by Yana on 05/06/2017.
  */
-public interface UI1 {
-
+public interface IFrameCallBack {
     void removeJLabel();
 
     void boundJLabel(int direction, int n);

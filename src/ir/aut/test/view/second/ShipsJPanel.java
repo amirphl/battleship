@@ -15,8 +15,8 @@ import static ir.aut.test.view.Constants.*;
 /**
  * Created by Yana on 05/06/2017.
  */
-public class ShipsJPanel extends JPanel implements UI2 {
-    private UI1 ui1;
+public class ShipsJPanel extends JPanel implements IShipsJPanelCallBack {
+    private IFrameCallBack IFrameCallBack;
     private MessageManager messageManager;
     private JButton resetButton;
     private JButton readyButton;
@@ -49,10 +49,10 @@ public class ShipsJPanel extends JPanel implements UI2 {
     private int lsb = 1;
     private int numberOfUsedShips = 0;
 
-    public ShipsJPanel(UI1 ui1, MessageManager messageManager) {
-        this.ui1 = ui1;
+    public ShipsJPanel(IFrameCallBack IFrameCallBack, MessageManager messageManager) {
+        this.IFrameCallBack = IFrameCallBack;
         this.messageManager = messageManager;
-        messageManager.setShipsJPanel(this);
+        messageManager.setiShipsJPanelCallBack(this);
         setLayout(null);
         setBorder(BorderFactory.createLineBorder(Color.BLACK));
         setSize(new Dimension(WIDTH_OF_ORDERINGJPANEL, HEIGHT_OF_FRAME - HEIGHT_OF_ORDERINGJPANEL));
@@ -220,7 +220,7 @@ public class ShipsJPanel extends JPanel implements UI2 {
                                 public void run() {
                                     while (!isInterrupted) {
                                         if (isOpponentReady()) {
-                                            ui1.startGame();
+                                            IFrameCallBack.startGame();
                                             startGame();
                                             isInterrupted = true;
                                             isReady = false;
@@ -247,13 +247,13 @@ public class ShipsJPanel extends JPanel implements UI2 {
                             disableButtons();
                         }
                         if (e.getSource() == smallSquareButton) {
-                            ui1.boundJLabel(direction, position = 1);
+                            IFrameCallBack.boundJLabel(direction, position = 1);
                         } else if (e.getSource() == mediumSquareButton) {
-                            ui1.boundJLabel(direction, position = 2);
+                            IFrameCallBack.boundJLabel(direction, position = 2);
                         } else if (e.getSource() == bigSquareButton) {
-                            ui1.boundJLabel(direction, position = 3);
+                            IFrameCallBack.boundJLabel(direction, position = 3);
                         } else if (e.getSource() == largeSquareButton) {
-                            ui1.boundJLabel(direction, position = 4);
+                            IFrameCallBack.boundJLabel(direction, position = 4);
                         }
                     }
                     repaint();
@@ -364,7 +364,7 @@ public class ShipsJPanel extends JPanel implements UI2 {
     }
 
     private void resetButtons() {
-        ui1.reset();
+        IFrameCallBack.reset();
         numberOfUsedShips = 0;
         ssb = 4;
         msb = 3;
@@ -389,14 +389,14 @@ public class ShipsJPanel extends JPanel implements UI2 {
                 direction = HARIZONTAL;
                 break;
         }
-        ui1.removeJLabel();
-        ui1.boundJLabel(direction, position);
+        IFrameCallBack.removeJLabel();
+        IFrameCallBack.boundJLabel(direction, position);
     }
 
     private void startGame() {
         removeButtuns();
         createButtons();
-        opponentName = ui1.getOpponentName();
+        opponentName = IFrameCallBack.getOpponentName();
         repaint();
     }
 

@@ -24,4 +24,8 @@ public class MessageTypes {
     public static final byte TERMINATE = 6;
 
     public static final byte CONVERSATION = 7;
+
+    public static final byte REJECT = 8;
+
+    public static final byte IP = 9;
 }

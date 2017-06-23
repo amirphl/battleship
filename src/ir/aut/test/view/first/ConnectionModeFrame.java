@@ -35,14 +35,17 @@ public class ConnectionModeFrame extends JFrame {
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setTitle("Select Connection Mode");
         setSize(500, 300);
-        setLocation(200, 200);
+        setLocation(400, 400);
         font = new Font("SanSerif", Font.PLAIN, 18);
         JTextArea textArea = new JTextArea("Name:");
         textArea.setFont(font);
+        textArea.setBackground(Color.YELLOW);
+        textArea.setDisabledTextColor(Color.BLACK);
+        textArea.setEnabled(false);
         add(textArea);
         TextHandler textHandler = new TextHandler();
         FocusHandler focusHandler = new FocusHandler();
-        name = new JTextField("Type your name here", 30);
+        name = new JTextField("", 30);
         name.setFont(font);
         name.addActionListener(textHandler);
         name.addFocusListener(focusHandler);
@@ -57,10 +60,10 @@ public class ConnectionModeFrame extends JFrame {
         buttonGroup = new ButtonGroup();
         buttonGroup.add(host);
         buttonGroup.add(guest);
-        portH = new JTextField("Type port then press Enter", 30);
-        portG = new JTextField("Type port then press Enter", 30);
+        portH = new JTextField("port:", 30);
+        portG = new JTextField("port:", 30);
         portG.setEnabled(false);
-        ip = new JTextField("Type ip then press Enter", 30);
+        ip = new JTextField("IP:", 30);
         ip.setEnabled(false);
         portH.setFont(font);
         portG.setFont(font);
@@ -135,6 +138,7 @@ public class ConnectionModeFrame extends JFrame {
                         ip.setEnabled(true);
                         portH.setEnabled(false);
                     }
+                    revalidate();
                 }
             }.start();
         }

@@ -62,5 +62,4 @@ public class LocationMessage extends BaseMessage {
     public byte getmCondition() {
         return mCondition;
     }
-
 }

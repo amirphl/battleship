@@ -112,6 +112,10 @@ public class NetworkHandler extends Thread {
                             AcceptMessage acceptMessage = new AcceptMessage(array);
                             iNetworkHandlerCallback.onMessageReceived(acceptMessage);
                             break;
+                        case MessageTypes.REJECT:
+                            RejectMessage rejectMessage = new RejectMessage(array);
+                            iNetworkHandlerCallback.onMessageReceived(rejectMessage);
+                            break;
                         case MessageTypes.REQUEST_NAME:
                             NameMessage nameMessage = new NameMessage(array);
                             iNetworkHandlerCallback.onMessageReceived(nameMessage);
@@ -123,6 +127,10 @@ public class NetworkHandler extends Thread {
                         case MessageTypes.CONVERSATION:
                             ConversationMessage conversationMessage = new ConversationMessage(array);
                             iNetworkHandlerCallback.onMessageReceived(conversationMessage);
+                            break;
+                        case MessageTypes.IP:
+                            IPMessage ipMessage = new IPMessage(array);
+                            iNetworkHandlerCallback.onMessageReceived(ipMessage);
                             break;
                     }
                 } else if (mReceivedQueue.isEmpty()) {

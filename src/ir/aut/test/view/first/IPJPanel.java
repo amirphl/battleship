@@ -8,41 +8,46 @@ import java.awt.event.ActionListener;
 /**
  * Created by Yana on 21/06/2017.
  */
-public class OpponentInformationJPanel extends JPanel {
+public class IPJPanel extends JPanel {
 
-    private RCInterface receivedConnectionsFrame;
+    private RCFCallBack receivedConnectionsFrame;
     private String name;
     private String ip;
     private int code;
+    private JTextArea nameArea;
+    private JTextArea ipArea;
     private JButton accept;
     private JButton reject;
 
-    public OpponentInformationJPanel(String name, String ip, int code, RCInterface receivedConnectionsFrame) {
+    public IPJPanel(String name, String ip, int code, RCFCallBack receivedConnectionsFrame) {
         this.name = name;
         this.ip = ip;
         this.code = code;
         this.receivedConnectionsFrame = receivedConnectionsFrame;
-        setLayout(null);
-        setOpaque(true);
-        setBounds(15, 50 + code * 110, 470, 100);
         setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        Font font = new Font("SanSerif", Font.ITALIC, 16);
+        nameArea = new JTextArea("name: " + name);
+        nameArea.setEnabled(false);
+        nameArea.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        nameArea.setBackground(Color.YELLOW);
+        nameArea.setDisabledTextColor(Color.BLACK);
+        nameArea.setFont(font);
+        add(nameArea);
+        ipArea = new JTextArea("IP: " + ip);
+        ipArea.setEnabled(false);
+        ipArea.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        ipArea.setBackground(Color.YELLOW);
+        ipArea.setDisabledTextColor(Color.BLACK);
+        ipArea.setFont(font);
+        add(ipArea);
         Handler handler = new Handler();
         accept = new JButton("Accept");
         reject = new JButton("Reject");
-        accept.setBounds(200, 20, 110, 50);
-        reject.setBounds(330, 20, 110, 50);
         accept.addActionListener(handler);
         reject.addActionListener(handler);
         add(accept);
         add(reject);
         revalidate();
-    }
-
-    public void paintComponent(Graphics g) {
-        g.setFont(new Font("SanSerif", Font.PLAIN, 18));
-        g.setColor(Color.BLACK);
-        g.drawString(name, 10, 20);
-        g.drawString(ip, 10, 60);
     }
 
     private class Handler implements ActionListener {
@@ -60,15 +65,5 @@ public class OpponentInformationJPanel extends JPanel {
                 }
             }.start();
         }
-    }
-
-    public void setCode(int code) {
-        this.code = code;
-        setBounds(10, 50 + code * 110, 480, 100);
-        repaint();
-    }
-
-    public int getCode() {
-        return code;
     }
 }

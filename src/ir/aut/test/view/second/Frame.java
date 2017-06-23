@@ -18,7 +18,7 @@ import static ir.aut.test.view.Constants.*;
 /**
  * Created by Yana on 05/06/2017.
  */
-public class Frame extends JLayeredPane implements MouseMotionListener, UI1, MouseListener {
+public class Frame extends JLayeredPane implements MouseMotionListener, IFrameCallBack, MouseListener {
     private JFrame frame;
     private MessageManager messageManager;
     private String station;
@@ -49,6 +49,7 @@ public class Frame extends JLayeredPane implements MouseMotionListener, UI1, Mou
         this.messageManager = messageManager;
         this.station = station;
         this.myName = myName;
+        messageManager.setiFrameCallBack(Frame.this);
         frame = new JFrame("Battle Ship");
         frame.setLayout(null);
         frame.setSize(new Dimension(WIDTH_OF_FRAME, HEIGHT_OF_FRAME));
@@ -62,8 +63,8 @@ public class Frame extends JLayeredPane implements MouseMotionListener, UI1, Mou
 
         new Thread() {
             public void run() {
-                messageManager.setFrame(Frame.this);
                 messageManager.sendMyName(myName);
+                System.out.println("");
             }
         }.start();
 
@@ -71,8 +72,11 @@ public class Frame extends JLayeredPane implements MouseMotionListener, UI1, Mou
 
         orderingJPanel = new OrderingJPanel(mySquares, "Please Arrange your Field.");
         shipsJPanel = new ShipsJPanel(this, messageManager);
+        chatJFrame = new ChatJFrame(messageManager, opponentName);
+
         add(orderingJPanel, 0);
         add(shipsJPanel, 0);
+        add(chatJFrame, 0);
         squaresEditor = new SquaresEditor(mySquares);
         frame.setVisible(true);
     }
@@ -164,6 +168,7 @@ public class Frame extends JLayeredPane implements MouseMotionListener, UI1, Mou
         if (condition == 1) {
             opponentSquares[i][j].destroy();
             numberOfDestroyedUnits++;
+            System.out.println(numberOfDestroyedUnits);
         } else {
             opponentSquares[i][j].setText("*");
         }
@@ -206,9 +211,7 @@ public class Frame extends JLayeredPane implements MouseMotionListener, UI1, Mou
     @Override
     public void setOpponentName(String username) {
         opponentName = username;
-        chatJFrame = new ChatJFrame(messageManager, opponentName);
-        add(chatJFrame, 0);
-        revalidate();
+        System.out.println("");
     }
 
     @Override
@@ -239,6 +242,7 @@ public class Frame extends JLayeredPane implements MouseMotionListener, UI1, Mou
                 if (matchCondition) {
                     if (myTurn) {
                         sendClickedPoint(e);
+                        System.out.println("sended");
                     } else {
 
                     }
