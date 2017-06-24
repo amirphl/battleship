@@ -88,6 +88,10 @@ public class MessageManager implements ServerSocketHandler.IServerSocketHandlerC
         mNetworkHandlerList.get(index).sendMessage(new IPMessage(username, ip));
     }
 
+    public void sendRequestLeave(String ip) {
+        mNetworkHandlerList.get(index).sendMessage(new RequestLeaveMessage(ip));
+    }
+
     /**
      * Accepts which netWorkHandler to connect and communicate.
      */
@@ -150,6 +154,10 @@ public class MessageManager implements ServerSocketHandler.IServerSocketHandlerC
         rcfCallBack.addIPJPanel(message.getUsername(), message.getIp());
     }
 
+    private void consumeRequestLeave(RequestLeaveMessage message) {
+        rcfCallBack.deleteByIP(message.getIp());
+    }
+
     public void setiFrameCallBack(IFrameCallBack iFrameCallBack) {
         this.iFrameCallBack = iFrameCallBack;
     }
@@ -203,6 +211,9 @@ public class MessageManager implements ServerSocketHandler.IServerSocketHandlerC
                 break;
             case MessageTypes.IP:
                 consumeIP((IPMessage) baseMessage);
+                break;
+            case MessageTypes.REQUEST_LEAVE:
+                consumeRequestLeave((RequestLeaveMessage) baseMessage);
                 break;
         }
     }

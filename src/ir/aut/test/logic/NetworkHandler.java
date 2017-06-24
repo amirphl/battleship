@@ -132,6 +132,10 @@ public class NetworkHandler extends Thread {
                             IPMessage ipMessage = new IPMessage(array);
                             iNetworkHandlerCallback.onMessageReceived(ipMessage);
                             break;
+                        case MessageTypes.REQUEST_LEAVE:
+                            RequestLeaveMessage requestLeaveMessage = new RequestLeaveMessage(array);
+                            iNetworkHandlerCallback.onMessageReceived(requestLeaveMessage);
+                            break;
                     }
                 } else if (mReceivedQueue.isEmpty()) {
                     try {

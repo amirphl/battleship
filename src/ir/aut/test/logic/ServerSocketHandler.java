@@ -1,5 +1,6 @@
 package ir.aut.test.logic;
 
+import javax.swing.*;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -24,7 +25,8 @@ public class ServerSocketHandler extends Thread {
         try {
             serverSocket = new ServerSocket(port, 200);
         } catch (IOException e) {
-            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Invalid port.", "Error", JOptionPane.ERROR_MESSAGE);
+            System.exit(0);
         }
         this.iNetworkHandlerCallback = iNetworkHandlerCallback;
         this.iServerSocketHandlerCallback = iServerSocketHandlerCallback;

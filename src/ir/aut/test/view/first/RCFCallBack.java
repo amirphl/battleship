@@ -9,4 +9,6 @@ public interface RCFCallBack {
     void acceptRequest(int i);
 
     void deleteJPanel(int i);
+
+    void deleteByIP(String ip);
 }

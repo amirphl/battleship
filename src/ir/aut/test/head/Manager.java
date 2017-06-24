@@ -6,6 +6,10 @@ import ir.aut.test.view.first.WaitingJFrame;
 import ir.aut.test.view.second.Frame;
 import ir.aut.test.view.first.ReceivedConnectionsFrame;
 
+import javax.swing.*;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 import static ir.aut.test.view.Constants.CLIENT;
 import static ir.aut.test.view.Constants.SERVER;
 
@@ -29,9 +33,13 @@ public class Manager implements ManagerInterface {
     public void connectToServer(String ip, int port, String playerName) {
         this.playerName = playerName;
         clientMessageManager = new MessageManager(ip, port);
-        waitingJFrame = new WaitingJFrame(this);
-        clientMessageManager.setIWaitingJFrameCallBack(waitingJFrame);
-        clientMessageManager.sendIP(playerName, ip);
+        waitingJFrame = new WaitingJFrame(this, clientMessageManager);
+        try {
+            System.out.println(InetAddress.getLocalHost().getHostAddress());
+            clientMessageManager.sendIP(playerName, InetAddress.getLocalHost().getHostAddress());
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

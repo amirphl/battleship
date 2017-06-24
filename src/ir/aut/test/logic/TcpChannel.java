@@ -1,5 +1,6 @@
 package ir.aut.test.logic;
 
+import javax.swing.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -26,7 +27,8 @@ public class TcpChannel {
             System.out.println("Client :client connected to server.");
             getStreams();
         } catch (IOException e) {
-            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Port or IP is incorrect.", "Error", JOptionPane.ERROR_MESSAGE);
+            System.exit(0);
         }
     }
 

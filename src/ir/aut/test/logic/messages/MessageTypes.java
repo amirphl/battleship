@@ -28,4 +28,6 @@ public class MessageTypes {
     public static final byte REJECT = 8;
 
     public static final byte IP = 9;
+
+    public static final byte REQUEST_LEAVE = 10;
 }

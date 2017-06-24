@@ -1,22 +1,29 @@
 package ir.aut.test.view.first;
 
 import ir.aut.test.head.ManagerInterface;
+import ir.aut.test.logic.MessageManager;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 /**
  * Created by Yana on 22/06/2017.
  */
 public class WaitingJFrame extends JFrame implements IWaitingJFrameCallBack {
+
     private ManagerInterface manager;
+    private MessageManager messageManager;
     private JTextArea textArea;
     private JButton cancel;
 
-    public WaitingJFrame(ManagerInterface manager) {
+    public WaitingJFrame(ManagerInterface manager, MessageManager messageManager) {
         this.manager = manager;
+        this.messageManager = messageManager;
+        messageManager.setIWaitingJFrameCallBack(this);
         setLayout(null);
         setResizable(false);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -47,6 +54,12 @@ public class WaitingJFrame extends JFrame implements IWaitingJFrameCallBack {
                 public void run() {
                     setVisible(false);
                     dispose();
+                    try {
+                        messageManager.sendRequestLeave(InetAddress.getLocalHost().getHostAddress());
+                    } catch (UnknownHostException e1) {
+                        e1.printStackTrace();
+                    }
+                    System.exit(0);
                 }
             }.start();
         }

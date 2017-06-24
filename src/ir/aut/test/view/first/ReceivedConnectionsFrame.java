@@ -17,6 +17,7 @@ public class ReceivedConnectionsFrame extends JFrame implements RCFCallBack {
     private JTextArea textArea;
     private int counter = 0;
     private ArrayList<IPJPanel> arrayList;
+    private ArrayList<String> arrayListOFIP;
     private JScrollPane scrollPane;
     private JPanel p;
 
@@ -25,6 +26,7 @@ public class ReceivedConnectionsFrame extends JFrame implements RCFCallBack {
         this.messageManager = messageManager;
         messageManager.setRcfCallBack(this);
         arrayList = new ArrayList<>();
+        arrayListOFIP = new ArrayList<>();
         setLayout(null);
         setResizable(false);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -52,6 +54,7 @@ public class ReceivedConnectionsFrame extends JFrame implements RCFCallBack {
 
     @Override
     public synchronized void addIPJPanel(String opponentName, String opponentIP) {
+        arrayListOFIP.add(opponentIP);
         IPJPanel jPanel = new IPJPanel(opponentName, opponentIP, counter, this);
         counter++;
         arrayList.add(jPanel);
@@ -72,6 +75,17 @@ public class ReceivedConnectionsFrame extends JFrame implements RCFCallBack {
     public void deleteJPanel(int i) {
         p.remove(arrayList.get(i));
         messageManager.rejectRequest(i);
+        p.revalidate();
+    }
+
+    @Override
+    public void deleteByIP(String ip) {
+        int num = 0;
+        for (; num < arrayListOFIP.size(); num++) {
+            if (arrayListOFIP.get(num).equals(ip))
+                break;
+        }
+        p.remove(arrayList.get(num));
         p.revalidate();
     }
 }
