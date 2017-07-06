@@ -1,11 +1,12 @@
 package ir.aut.test.logic;
 
+import ir.aut.test.head.Connector;
 import ir.aut.test.logic.messages.*;
-import ir.aut.test.view.first.IWaitingJFrameCallBack;
+import ir.aut.test.view.first.WaitingJFrameCallBack;
 import ir.aut.test.view.first.RCFCallBack;
-import ir.aut.test.view.second.IFrameCallBack;
-import ir.aut.test.view.second.IShipsJPanelCallBack;
-import ir.aut.test.view.second.IChatJFrameCallBack;
+import ir.aut.test.view.second.FrameCallBack;
+import ir.aut.test.view.second.ShipsJPanelCallBack;
+import ir.aut.test.view.second.ChatBoxCallBack;
 
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
@@ -23,11 +24,12 @@ public class MessageManager implements ServerSocketHandler.IServerSocketHandlerC
     private ServerSocketHandler mServerSocketHandler;
     private List<NetworkHandler> mNetworkHandlerList;
     private int index = 0;
-    private IFrameCallBack iFrameCallBack;
-    private IShipsJPanelCallBack iShipsJPanelCallBack;
-    private IChatJFrameCallBack iChatJFrameCallBack;
-    private RCFCallBack rcfCallBack;
-    private IWaitingJFrameCallBack iWaitingJFrameCallBack;
+    private Connector connector;
+//    private FrameCallBack iFrameCallBack;
+//    private ShipsJPanelCallBack shipsJPanelCallBack;
+//    private ChatBoxCallBack chatBoxCallBack;
+//    private RCFCallBack rcfCallBack;
+//    private WaitingJFrameCallBack waitingJFrameCallBack;
 
     /**
      * Instantiate server socket handler and start it. (Call this constructor in host mode)
@@ -76,8 +78,8 @@ public class MessageManager implements ServerSocketHandler.IServerSocketHandlerC
         mNetworkHandlerList.get(index).sendMessage(new NameMessage(username));
     }
 
-    public void sendTerminate() {
-        mNetworkHandlerList.get(index).sendMessage(new TerminateMessage());
+    public void sendTerminate(int i) {
+        mNetworkHandlerList.get(index).sendMessage(new TerminateMessage(i));
     }
 
     public void sendConversation(String text) {
@@ -120,62 +122,88 @@ public class MessageManager implements ServerSocketHandler.IServerSocketHandlerC
     }
 
     private void consumeReadiness(ReadinessMessage message) {
-        iShipsJPanelCallBack.setOpponentReadiness(message.getReadinessCondition());
+        connector.setReadinessCondition(message.getReadinessCondition());
+        connector.sendMessage("ConsumeReadinessCondition");
+//        shipsJPanelCallBack.setOpponentReadiness(message.getReadinessCondition());
     }
 
     private void consumeLocation(LocationMessage message) {
-        if (message.getmCondition() == 3)
-            iFrameCallBack.destroyMyShips(message.getmI(), message.getmJ());
-        else
-            iFrameCallBack.destroyOpponentShips(message.getmI(), message.getmJ(), message.getmCondition());
+        connector.setCondition(message.getmCondition());
+        connector.setmX(message.getmI());
+        connector.setmY(message.getmJ());
+        connector.sendMessage("ConsumeLocationMessage");
+//        if (message.getmCondition() == 3)
+//            iFrameCallBack.destroyMyShips(message.getmI(), message.getmJ());
+//        else
+//            iFrameCallBack.destroyOpponentShips(message.getmI(), message.getmJ(), message.getmCondition());
     }
 
     private void consumeAccept(AcceptMessage message) {
-        iWaitingJFrameCallBack.close(1);
+        connector.sendMessage("ConsumeAcceptMessage");
+//        waitingJFrameCallBack.close(1);
     }
 
     private void consumeReject(RejectMessage message) {
-        iWaitingJFrameCallBack.close(0);
+        connector.sendMessage("ConsumeRejectMessage");
+//        waitingJFrameCallBack.close(0);
     }
 
     private void consumeOpponentName(NameMessage message) {
-        iFrameCallBack.setOpponentName(message.getUsername());
+        connector.setOpponentName(message.getUsername());
+        connector.sendMessage("ConsumeOpponentName");
+//        iFrameCallBack.setOpponentName();
     }
 
     private void consumeTerminate(TerminateMessage message) {
-        iFrameCallBack.loose();
+        connector.setTerminateCondition(message.getI());
+        connector.sendMessage("ConsumeTerminateMessage");
+//        if (message.getI() == 1)
+//            iFrameCallBack.loose();
+//        else
+//            iFrameCallBack.win(message.getI());
     }
 
     private void consumeConversation(ConversationMessage message) {
-        iChatJFrameCallBack.addText(message.getText(), 2);
+        connector.setConversationMessage(message.getText());
+        connector.sendMessage("ConsumeConversationMessage");
+//        chatBoxCallBack.addText(message.getText(), 2);
     }
 
     private void consumeIP(IPMessage message) {
-        rcfCallBack.addIPJPanel(message.getUsername(), message.getIp());
+        connector.setIp(message.getIp());
+        connector.setOpponentName(message.getUsername());
+        connector.sendMessage("AddSubJPanel");
+//        rcfCallBack.addIPJPanel(message.getUsername(), message.getIp());
     }
 
     private void consumeRequestLeave(RequestLeaveMessage message) {
-        rcfCallBack.deleteByIP(message.getIp());
+        connector.setIp(message.getIp());
+        connector.sendMessage("DeleteSubJPanelByIP");
+//        rcfCallBack.deleteByIP(message.getIp());
     }
 
-    public void setiFrameCallBack(IFrameCallBack iFrameCallBack) {
-        this.iFrameCallBack = iFrameCallBack;
-    }
+//    public void setiFrameCallBack(FrameCallBack iFrameCallBack) {
+//        this.iFrameCallBack = iFrameCallBack;
+//    }
+//
+//    public void setShipsJPanelCallBack(ShipsJPanelCallBack shipsJPanelCallBack) {
+//        this.shipsJPanelCallBack = shipsJPanelCallBack;
+//    }
+//
+//    public void setChatBoxCallBack(ChatBoxCallBack chatBoxCallBack) {
+//        this.chatBoxCallBack = chatBoxCallBack;
+//    }
+//
+//    public void setRcfCallBack(RCFCallBack rcfCallBack) {
+//        this.rcfCallBack = rcfCallBack;
+//    }
+//
+//    public void setIWaitingJFrameCallBack(WaitingJFrameCallBack WaitingJFrameCallBack) {
+//        this.waitingJFrameCallBack = WaitingJFrameCallBack;
+//    }
 
-    public void setiShipsJPanelCallBack(IShipsJPanelCallBack iShipsJPanelCallBack) {
-        this.iShipsJPanelCallBack = iShipsJPanelCallBack;
-    }
-
-    public void setiChatJFrameCallBack(IChatJFrameCallBack iChatJFrameCallBack) {
-        this.iChatJFrameCallBack = iChatJFrameCallBack;
-    }
-
-    public void setRcfCallBack(RCFCallBack rcfCallBack) {
-        this.rcfCallBack = rcfCallBack;
-    }
-
-    public void setIWaitingJFrameCallBack(IWaitingJFrameCallBack IWaitingJFrameCallBack) {
-        this.iWaitingJFrameCallBack = IWaitingJFrameCallBack;
+    public void setConnector(Connector c) {
+        connector = c;
     }
 
     /**

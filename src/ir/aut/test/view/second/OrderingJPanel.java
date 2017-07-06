@@ -44,7 +44,7 @@ public class OrderingJPanel extends JPanel {
                 g.setColor(squares[i][j].getBgColor());
                 g.fillRect(squares[i][j].getmX(), squares[i][j].getmY(), SIDE_LENGTH, SIDE_LENGTH);
                 g.setColor(squares[i][j].gettColor());
-                g.drawString(squares[i][j].getText(), squares[i][j].getmX() + (SIDE_LENGTH - 10) / 2, squares[i][j].getmY() + (SIDE_LENGTH + 40) / 2);
+                g.drawString(squares[i][j].getText(), squares[i][j].getmX() + (SIDE_LENGTH - 20) / 2, squares[i][j].getmY() + (SIDE_LENGTH + 10) / 2);
             }
         }
 

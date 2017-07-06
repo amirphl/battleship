@@ -1,5 +1,6 @@
 package ir.aut.test.view.first;
 
+import ir.aut.test.head.Connector;
 import ir.aut.test.logic.MessageManager;
 import ir.aut.test.head.ManagerInterface;
 
@@ -7,24 +8,25 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 
+
 /**
  * Created by Yana on 21/06/2017.
  */
-public class ReceivedConnectionsFrame extends JFrame implements RCFCallBack {
+public class ReceivedConnectionsJFrame extends JFrame implements RCFCallBack {
 
     private ManagerInterface manager;
-    private MessageManager messageManager;
+    private Connector connector;
     private JTextArea textArea;
     private int counter = 0;
-    private ArrayList<IPJPanel> arrayList;
+    private ArrayList<SubJPanel> arrayList;
     private ArrayList<String> arrayListOFIP;
     private JScrollPane scrollPane;
     private JPanel p;
 
-    public ReceivedConnectionsFrame(ManagerInterface manager, MessageManager messageManager) {
+    public ReceivedConnectionsJFrame(ManagerInterface manager, Connector connector) {
         this.manager = manager;
-        this.messageManager = messageManager;
-        messageManager.setRcfCallBack(this);
+        this.connector = connector;
+        connector.setRcfCallBack(this);
         arrayList = new ArrayList<>();
         arrayListOFIP = new ArrayList<>();
         setLayout(null);
@@ -53,9 +55,9 @@ public class ReceivedConnectionsFrame extends JFrame implements RCFCallBack {
     }
 
     @Override
-    public synchronized void addIPJPanel(String opponentName, String opponentIP) {
+    public synchronized void addSubJPanel(String opponentName, String opponentIP) {
         arrayListOFIP.add(opponentIP);
-        IPJPanel jPanel = new IPJPanel(opponentName, opponentIP, counter, this);
+        SubJPanel jPanel = new SubJPanel(opponentName, opponentIP, counter, this);
         counter++;
         arrayList.add(jPanel);
         p.add(jPanel);
@@ -65,16 +67,19 @@ public class ReceivedConnectionsFrame extends JFrame implements RCFCallBack {
 
     @Override
     public void acceptRequest(int i) {
-        messageManager.acceptRequest(i);
+        connector.setI(i);
+        connector.sendMessage("Accept");
         setVisible(false);
         dispose();
         manager.startGameS();
     }
 
     @Override
-    public void deleteJPanel(int i) {
+    public void deleteSubJPanel(int i) {
         p.remove(arrayList.get(i));
-        messageManager.rejectRequest(i);
+        connector.setI(i);
+        connector.sendMessage("Reject");
+        setVisible(false);
         p.revalidate();
     }
 

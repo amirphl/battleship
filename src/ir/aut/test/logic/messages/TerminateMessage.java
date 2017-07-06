@@ -7,7 +7,10 @@ import java.nio.ByteBuffer;
  */
 public class TerminateMessage extends BaseMessage {
 
-    public TerminateMessage() {
+    private int i;
+
+    public TerminateMessage(int i) {
+        this.i = i;
         serialize();
     }
 
@@ -18,11 +21,12 @@ public class TerminateMessage extends BaseMessage {
 
     @Override
     protected void serialize() {
-        int messageLength = 4 + 1 + 1;
+        int messageLength = 4 + 1 + 1 + 1;
         ByteBuffer byteBuffer = ByteBuffer.allocate(messageLength);
         byteBuffer.putInt(messageLength);
         byteBuffer.put(MessageTypes.PROTOCOL_VERSION);
         byteBuffer.put(MessageTypes.TERMINATE);
+        byteBuffer.put((byte) i);
         mSerialized = byteBuffer.array();
     }
 
@@ -32,10 +36,15 @@ public class TerminateMessage extends BaseMessage {
         int messageLength = byteBuffer.getInt();
         byte protocolVersion = byteBuffer.get();
         byte messageType = byteBuffer.get();
+        i = byteBuffer.get();
     }
 
     @Override
     public byte getMessageType() {
         return MessageTypes.TERMINATE;
+    }
+
+    public byte getI(){
+        return (byte) i;
     }
 }

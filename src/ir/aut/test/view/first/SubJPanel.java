@@ -8,20 +8,16 @@ import java.awt.event.ActionListener;
 /**
  * Created by Yana on 21/06/2017.
  */
-public class IPJPanel extends JPanel {
+public class SubJPanel extends JPanel {
 
     private RCFCallBack receivedConnectionsFrame;
-    private String name;
-    private String ip;
     private int code;
     private JTextArea nameArea;
     private JTextArea ipArea;
     private JButton accept;
     private JButton reject;
 
-    public IPJPanel(String name, String ip, int code, RCFCallBack receivedConnectionsFrame) {
-        this.name = name;
-        this.ip = ip;
+    public SubJPanel(String name, String ip, int code, RCFCallBack receivedConnectionsFrame) {
         this.code = code;
         this.receivedConnectionsFrame = receivedConnectionsFrame;
         setBorder(BorderFactory.createLineBorder(Color.BLACK));
@@ -60,7 +56,7 @@ public class IPJPanel extends JPanel {
                     } else {
                         setVisible(false);
                         revalidate();
-                        receivedConnectionsFrame.deleteJPanel(code);
+                        receivedConnectionsFrame.deleteSubJPanel(code);
                     }
                 }
             }.start();

@@ -1,5 +1,6 @@
 package ir.aut.test.view.second;
 
+import ir.aut.test.head.Connector;
 import ir.aut.test.logic.MessageManager;
 
 import javax.imageio.ImageIO;
@@ -15,9 +16,10 @@ import static ir.aut.test.view.Constants.*;
 /**
  * Created by Yana on 05/06/2017.
  */
-public class ShipsJPanel extends JPanel implements IShipsJPanelCallBack {
-    private IFrameCallBack IFrameCallBack;
-    private MessageManager messageManager;
+public class ShipsJPanel extends JPanel implements ShipsJPanelCallBack {
+    private FrameCallBack iFrameCallBack;
+    //    private MessageManager messageManager;
+    private Connector connector;
     private JButton resetButton;
     private JButton readyButton;
     private JButton rotateButton;
@@ -49,10 +51,12 @@ public class ShipsJPanel extends JPanel implements IShipsJPanelCallBack {
     private int lsb = 1;
     private int numberOfUsedShips = 0;
 
-    public ShipsJPanel(IFrameCallBack IFrameCallBack, MessageManager messageManager) {
-        this.IFrameCallBack = IFrameCallBack;
-        this.messageManager = messageManager;
-        messageManager.setiShipsJPanelCallBack(this);
+    public ShipsJPanel(FrameCallBack iFrameCallBack, Connector connector) {
+        this.iFrameCallBack = iFrameCallBack;
+//        this.messageManager = messageManager;
+        this.connector = connector;
+//        messageManager.setShipsJPanelCallBack(this);
+        connector.setShipsJPanelCallBack(this);
         setLayout(null);
         setBorder(BorderFactory.createLineBorder(Color.BLACK));
         setSize(new Dimension(WIDTH_OF_ORDERINGJPANEL, HEIGHT_OF_FRAME - HEIGHT_OF_ORDERINGJPANEL));
@@ -86,6 +90,9 @@ public class ShipsJPanel extends JPanel implements IShipsJPanelCallBack {
             readyButton.setOpaque(true);
             rotateButton.setBounds(750, 30, 110, 30);
             rotateButton.setOpaque(true);
+
+            rotateButton.setEnabled(false);
+
             resetButton.setToolTipText("For Reset , Press me");
             readyButton.setToolTipText("To start , Press me");
             rotateButton.setToolTipText("To Rotate rectangle , Press me");
@@ -199,10 +206,10 @@ public class ShipsJPanel extends JPanel implements IShipsJPanelCallBack {
                 public void run() {
                     if (e.getSource() == readyButton) {
                         if (e.getActionCommand().equals("Ready")) {
-                            if (numberOfUsedShips != 10) {
-                                JOptionPane.showMessageDialog(null, "Put all ships in the map.", "Error", JOptionPane.ERROR_MESSAGE);
-                                return;
-                            }
+//                            if (numberOfUsedShips != 10) {
+//                                JOptionPane.showMessageDialog(null, "Put all ships in the map.", "Error", JOptionPane.ERROR_MESSAGE);
+//                                return;
+//                            }
                             readyButton.setText("Cancel");
                         } else if (e.getActionCommand().equals("Cancel"))
                             readyButton.setText("Ready");
@@ -211,21 +218,26 @@ public class ShipsJPanel extends JPanel implements IShipsJPanelCallBack {
                             isEditing = true;
                             isReady = false;
                             isInterrupted = true;
-                            messageManager.sendReadinessCondition(false);
+                            connector.setReadinessCondition(false);
+                            connector.sendMessage("SendReadinessCondition");
+//                            messageManager.sendReadinessCondition(false);
                         } else {
+                            System.out.println(isOpponentReady());
                             isEditing = false;
                             isReady = true;
-                            messageManager.sendReadinessCondition(true);
+                            isInterrupted = false;
+                            connector.setReadinessCondition(true);
+                            connector.sendMessage("SendReadinessCondition");
+//                            messageManager.sendReadinessCondition(true);
                             new Thread() {
                                 public void run() {
                                     while (!isInterrupted) {
                                         if (isOpponentReady()) {
-                                            IFrameCallBack.startGame();
+                                            iFrameCallBack.startGame();
                                             startGame();
-                                            isInterrupted = true;
                                             isReady = false;
                                             break;
-                                        }else
+                                        } else
                                             try {
                                                 Thread.sleep(150);
                                             } catch (InterruptedException e1) {
@@ -236,7 +248,7 @@ public class ShipsJPanel extends JPanel implements IShipsJPanelCallBack {
                             }.start();
                         }
                     } else if (e.getSource() == leaveButton) {
-
+                        leaveGame();
                     }
                     if (isEditing) {
                         if (e.getSource() == resetButton) {
@@ -247,13 +259,13 @@ public class ShipsJPanel extends JPanel implements IShipsJPanelCallBack {
                             disableButtons();
                         }
                         if (e.getSource() == smallSquareButton) {
-                            IFrameCallBack.boundJLabel(direction, position = 1);
+                            iFrameCallBack.boundJLabel(direction, position = 1);
                         } else if (e.getSource() == mediumSquareButton) {
-                            IFrameCallBack.boundJLabel(direction, position = 2);
+                            iFrameCallBack.boundJLabel(direction, position = 2);
                         } else if (e.getSource() == bigSquareButton) {
-                            IFrameCallBack.boundJLabel(direction, position = 3);
+                            iFrameCallBack.boundJLabel(direction, position = 3);
                         } else if (e.getSource() == largeSquareButton) {
-                            IFrameCallBack.boundJLabel(direction, position = 4);
+                            iFrameCallBack.boundJLabel(direction, position = 4);
                         }
                     }
                     repaint();
@@ -349,6 +361,7 @@ public class ShipsJPanel extends JPanel implements IShipsJPanelCallBack {
         mediumSquareButton.setEnabled(false);
         bigSquareButton.setEnabled(false);
         largeSquareButton.setEnabled(false);
+        rotateButton.setEnabled(true);
     }
 
     public void enableButtons() {
@@ -361,10 +374,11 @@ public class ShipsJPanel extends JPanel implements IShipsJPanelCallBack {
             bigSquareButton.setEnabled(true);
         if (lsb != 0)
             largeSquareButton.setEnabled(true);
+        rotateButton.setEnabled(false);
     }
 
     private void resetButtons() {
-        IFrameCallBack.reset();
+        iFrameCallBack.reset();
         numberOfUsedShips = 0;
         ssb = 4;
         msb = 3;
@@ -378,6 +392,7 @@ public class ShipsJPanel extends JPanel implements IShipsJPanelCallBack {
         bigSquareButton.setEnabled(true);
         largeSquareButton.setText(String.valueOf(lsb));
         largeSquareButton.setEnabled(true);
+        rotateButton.setEnabled(false);
     }
 
     private void rotateButton() {
@@ -389,15 +404,26 @@ public class ShipsJPanel extends JPanel implements IShipsJPanelCallBack {
                 direction = HARIZONTAL;
                 break;
         }
-        IFrameCallBack.removeJLabel();
-        IFrameCallBack.boundJLabel(direction, position);
+        iFrameCallBack.removeJLabel();
+        iFrameCallBack.boundJLabel(direction, position);
     }
 
     private void startGame() {
         removeButtuns();
         createButtons();
-        opponentName = IFrameCallBack.getOpponentName();
+        opponentName = iFrameCallBack.getOpponentName();
         repaint();
+    }
+
+    private void leaveGame() {
+        String s = JOptionPane.showInputDialog("If you Sure , Type < LEAVE > here:");
+        if (s.equals("LEAVE") && s != null) {
+            connector.setTerminateCondition(0);
+            connector.sendMessage("SendTerminateMessage");
+//            messageManager.sendTerminate(0);
+            iFrameCallBack.loose();
+            System.exit(0);
+        }
     }
 
     public void setOpponentReadiness(boolean bool) {

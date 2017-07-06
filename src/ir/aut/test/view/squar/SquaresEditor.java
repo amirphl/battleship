@@ -11,7 +11,7 @@ public class SquaresEditor {
     private int mX;
     private int mY;
     private int direction;
-    private int n;
+    private int jLabelLength;
     private int raw = -1;
     private int column = -1;
 
@@ -20,7 +20,7 @@ public class SquaresEditor {
         mX = 0;
         mY = 0;
         direction = 0;
-        n = 0;
+        jLabelLength = 0;
     }
 
     public boolean run() {
@@ -51,7 +51,7 @@ public class SquaresEditor {
     }
 
     private boolean fillInHarizontal() {
-        for (int i = 0; i < n; i++) {
+        for (int i = 0; i < jLabelLength; i++) {
             if (column >= LEN || isFill(raw, column))
                 return false;
             column += 1;
@@ -61,8 +61,8 @@ public class SquaresEditor {
     }
 
     private void fillMyRectangleInHarizontalMode() {
-        column -= n;
-        for (int i = 0; i < n; i++) {
+        column -= jLabelLength;
+        for (int i = 0; i < jLabelLength; i++) {
             squares[raw][column++].fill();
         }
     }
@@ -84,7 +84,7 @@ public class SquaresEditor {
     }
 
     private boolean fillInVertical() {
-        for (int j = 0; j < n; j++) {
+        for (int j = 0; j < jLabelLength; j++) {
             if (raw >= LEN || isFill(raw, column))
                 return false;
             raw += 1;
@@ -94,8 +94,8 @@ public class SquaresEditor {
     }
 
     private void fillMyRectangleInVerticalMode() {
-        raw -= n;
-        for (int i = 0; i < n; i++) {
+        raw -= jLabelLength;
+        for (int i = 0; i < jLabelLength; i++) {
             squares[raw++][column].fill();
         }
     }
@@ -112,7 +112,7 @@ public class SquaresEditor {
         this.direction = direction;
     }
 
-    public void setN(int n) {
-        this.n = n;
+    public void setJLabelLength(int jLabelLength) {
+        this.jLabelLength = jLabelLength;
     }
 }

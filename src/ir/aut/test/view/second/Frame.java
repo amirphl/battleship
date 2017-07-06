@@ -1,5 +1,6 @@
 package ir.aut.test.view.second;
 
+import ir.aut.test.head.Connector;
 import ir.aut.test.logic.MessageManager;
 import ir.aut.test.view.squar.Square;
 import ir.aut.test.view.squar.SquaresEditor;
@@ -18,21 +19,21 @@ import static ir.aut.test.view.Constants.*;
 /**
  * Created by Yana on 05/06/2017.
  */
-public class Frame extends JLayeredPane implements MouseMotionListener, IFrameCallBack, MouseListener {
+public class Frame extends JLayeredPane implements MouseMotionListener, FrameCallBack, MouseListener {
     private JFrame frame;
-    private MessageManager messageManager;
+    private Connector connector;
     private String station;
     private String myName = " ";
     private String opponentName = " ";
     private OrderingJPanel orderingJPanel;
-    private ChatJFrame chatJFrame;
+    private ChatBox chatBox;
     private ShipsJPanel shipsJPanel;
     private JLabel jLabel;
     private Square[][] mySquares;
     private Square[][] opponentSquares;
     private boolean myTurn = true;
     private boolean abstractTurn = true;
-    private boolean matchCondition = false;
+    private boolean isMatchStarted = false;
     /**
      * jLabelDirection = 0 ----> HARIZONTAL .
      * jLabelDirection = 1 ----> VERTICAL .
@@ -41,15 +42,15 @@ public class Frame extends JLayeredPane implements MouseMotionListener, IFrameCa
     /**
      * n : Length of ship .
      */
-    private int n = 0;
+    private int lengthOfJLabel;
     private SquaresEditor squaresEditor;
     private int numberOfDestroyedUnits = 0;
 
-    public Frame(MessageManager messageManager, String station, String myName) {
-        this.messageManager = messageManager;
+    public Frame(Connector connector, String station, String myName) {
+        this.connector = connector;
+        connector.setFrameCallBack(this);
         this.station = station;
         this.myName = myName;
-        messageManager.setiFrameCallBack(Frame.this);
         frame = new JFrame("Battle Ship");
         frame.setLayout(null);
         frame.setSize(new Dimension(WIDTH_OF_FRAME, HEIGHT_OF_FRAME));
@@ -61,24 +62,23 @@ public class Frame extends JLayeredPane implements MouseMotionListener, IFrameCa
         frame.addMouseMotionListener(this);
         frame.addMouseListener(this);
 
-        new Thread() {
-            public void run() {
-                messageManager.sendMyName(myName);
-                System.out.println("");
-            }
-        }.start();
-
         createSquares();
 
         orderingJPanel = new OrderingJPanel(mySquares, "Please Arrange your Field.");
-        shipsJPanel = new ShipsJPanel(this, messageManager);
-        chatJFrame = new ChatJFrame(messageManager, opponentName);
+        shipsJPanel = new ShipsJPanel(this, connector);
+        chatBox = new ChatBox(connector, opponentName);
 
         add(orderingJPanel, 0);
         add(shipsJPanel, 0);
-        add(chatJFrame, 0);
+        add(chatBox, 0);
+
         squaresEditor = new SquaresEditor(mySquares);
+
         frame.setVisible(true);
+
+        connector.setStation(station);
+        connector.setPlayerName(myName);
+        connector.sendMessage("SendMyName");
     }
 
     private void createSquares() {
@@ -99,6 +99,7 @@ public class Frame extends JLayeredPane implements MouseMotionListener, IFrameCa
             jLabel.setIcon(new ImageIcon(ImageIO.read(new File("jLabelIcon.jpg"))));
         } catch (IOException e) {
             e.printStackTrace();
+            System.out.println("JLabel haa not been constructed.");
         }
         add(jLabel, 2, 1);
     }
@@ -112,7 +113,7 @@ public class Frame extends JLayeredPane implements MouseMotionListener, IFrameCa
     public void boundJLabel(int direction, int n) {
         createJLabel();
         jLabelDirection = direction;
-        this.n = n;
+        lengthOfJLabel = n;
         switch (direction) {
             case HARIZONTAL:
                 jLabel.setBounds(0, 0, n * SIDE_LENGTH, SIDE_LENGTH);
@@ -135,7 +136,7 @@ public class Frame extends JLayeredPane implements MouseMotionListener, IFrameCa
 
     @Override
     public void startGame() {
-        matchCondition = true;
+        isMatchStarted = true;
         removeJLabel();
         new Terminator().start();
         if (station.equals(SERVER))
@@ -147,35 +148,47 @@ public class Frame extends JLayeredPane implements MouseMotionListener, IFrameCa
     @Override
     public void destroyMyShips(int i, int j) {
         try {
+            connector.setmX(i);
+            connector.setmY(j);
             if (mySquares[i][j].isFill()) {
                 mySquares[i][j].destroy();
-                messageManager.sendLocation(i, j, 1);
+                connector.setCondition(1);
+                connector.sendMessage("SendLocation");
+//                messageManager.sendLocation(i, j, 1);
             } else if (mySquares[i][j].isDestroyed()) {
-
+                connector.setCondition(2);
+                connector.sendMessage("SendLocation");
+//                messageManager.sendLocation(i, j, 2);
             } else {
-                mySquares[i][j].setText("*");
-                messageManager.sendLocation(i, j, 0);
+                mySquares[i][j].setText("#");
+                connector.setCondition(0);
+                connector.sendMessage("SendLocation");
+//                messageManager.sendLocation(i, j, 0);
                 setMyTurn(true);
             }
         } catch (ArrayIndexOutOfBoundsException e) {
-
+            connector.setCondition(2);
+            connector.sendMessage("SendLocation");
+//            messageManager.sendLocation(i, j, 2);
         }
         repaint();
     }
 
     @Override
     public void destroyOpponentShips(int i, int j, int condition) {
-        if (condition == 1) {
+        if (condition == 2) {
+            abstractTurn = true;
+            return;
+        } else if (condition == 1) {
             opponentSquares[i][j].destroy();
             numberOfDestroyedUnits++;
-            System.out.println(numberOfDestroyedUnits);
         } else {
-            opponentSquares[i][j].setText("*");
+            opponentSquares[i][j].setText("#");
         }
         remove(orderingJPanel);
         orderingJPanel = new OrderingJPanel(opponentSquares, "Your Turn");
         add(orderingJPanel, 0);
-        frame.revalidate();
+        repaint();
         if (condition == 0) {
             remove(orderingJPanel);
             orderingJPanel = new OrderingJPanel(opponentSquares, "Transforming ...");
@@ -200,18 +213,19 @@ public class Frame extends JLayeredPane implements MouseMotionListener, IFrameCa
             orderingJPanel = new OrderingJPanel(mySquares, opponentName + "'s Turn");
         }
         add(orderingJPanel, 0);
-        frame.revalidate();
+        repaint();
     }
 
-    @Override
-    public String getMyName() {
-        return myName;
-    }
+//    @Override
+//    public String getMyName() {
+//        return myName;
+//    }
 
     @Override
     public void setOpponentName(String username) {
         opponentName = username;
-        System.out.println("");
+        chatBox.paintOpponentName(opponentName);
+        repaint();
     }
 
     @Override
@@ -239,10 +253,10 @@ public class Frame extends JLayeredPane implements MouseMotionListener, IFrameCa
     public void mouseClicked(MouseEvent e) {
         new Thread() {
             public void run() {
-                if (matchCondition) {
+                if (isMatchStarted) {
                     if (myTurn) {
                         sendClickedPoint(e);
-                        System.out.println("sended");
+//                        System.out.println("point is send.");
                     } else {
 
                     }
@@ -250,11 +264,11 @@ public class Frame extends JLayeredPane implements MouseMotionListener, IFrameCa
                     squaresEditor.setmX(e.getX());
                     squaresEditor.setmY(e.getY());
                     squaresEditor.setDirection(jLabelDirection);
-                    squaresEditor.setN(n);
+                    squaresEditor.setJLabelLength(lengthOfJLabel);
                     if (squaresEditor.run()) {
                         shipsJPanel.changeTextOfButton();
-                        removeJLabel();
                         shipsJPanel.enableButtons();
+                        removeJLabel();
                         repaint();
                     }
                 }
@@ -284,15 +298,20 @@ public class Frame extends JLayeredPane implements MouseMotionListener, IFrameCa
 
     private void sendClickedPoint(MouseEvent e) {
         if (abstractTurn)
-            messageManager.sendLocation((e.getY() - S_Y - 30) / SIDE_LENGTH, (e.getX() - S_X) / SIDE_LENGTH, 3);
+            connector.setCondition(2);
+        connector.setmX((e.getY() - S_Y - 30) / SIDE_LENGTH);
+        connector.setmY(((e.getX() - S_X) / SIDE_LENGTH));
+        connector.setCondition(3);
+        connector.sendMessage("SendLocation");
+//        messageManager.sendLocation((e.getY() - S_Y - 30) / SIDE_LENGTH, (e.getX() - S_X) / SIDE_LENGTH, 3);
         abstractTurn = false;
     }
 
     private class Terminator extends Thread {
         public void run() {
-            while (matchCondition) {
+            while (isMatchStarted) {
                 if (numberOfDestroyedUnits == 20) {
-                    win();
+                    win(1);
                     break;
                 } else {
                     try {
@@ -305,15 +324,38 @@ public class Frame extends JLayeredPane implements MouseMotionListener, IFrameCa
         }
     }
 
-    public void win() {
-        matchCondition = false;
-        JOptionPane.showMessageDialog(null, "Congratulation !!! You won the match ...", "Game ended.", JOptionPane.INFORMATION_MESSAGE);
-        messageManager.sendTerminate();
+    @Override
+    public void win(int i) {
+        isMatchStarted = false;
+        if (i == 1) {
+            JOptionPane.showMessageDialog(null, "Congratulation !!! You won the match ...", "Game ended.", JOptionPane.INFORMATION_MESSAGE);
+            connector.setTerminateCondition(1);
+            connector.sendMessage("SendTerminateCondition");
+//            messageManager.sendTerminate(1);
+        } else if (i == 0) {
+            JOptionPane.showMessageDialog(null, "Congratulation !!! You won the match . Opponent Resigned.", "Game ended.", JOptionPane.INFORMATION_MESSAGE);
+            connector.sendMessage("CloseConnection");
+//            messageManager.onSocketClosed();
+        }
     }
 
     @Override
     public void loose() {
-        matchCondition = false;
+        isMatchStarted = false;
         JOptionPane.showMessageDialog(null, "How bad !!! You lost ...", "Game ended.", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+//    private void createFile() {
+//        TIMESTAMP = new SimpleDateFormat("yyyy:MM:dd_HH:mm:ss").format(Calendar.getInstance().getTime());
+//        FILENAME = "ConversationsHistory/" + OPPONENT_NAME + "_" + TIMESTAMP + ".txt";
+//        try {
+//            new BufferedWriter(new FileWriter(FILENAME)).write("");
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
+
+    private boolean isMatchStarted() {
+        return isMatchStarted;
     }
 }

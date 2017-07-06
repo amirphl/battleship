@@ -21,7 +21,7 @@ public class Constants {
      */
     public static final int LEN = 10;
     public static final Font TEXT_FONT = new Font("SanSerif", Font.PLAIN, 16);
-    public static final Font TEXT_FONT_2 = new Font("SanSerif", Font.PLAIN, 10);
+    public static final Font TEXT_FONT_2 = new Font("SanSerif", Font.PLAIN, 25);
 
     public static final int WIDTH_OF_MENUJPANEL = 100;
     public static final int HEIGHT_OF_MENUJPANEL = 40;

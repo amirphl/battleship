@@ -3,7 +3,7 @@ package ir.aut.test.view.second;
 /**
  * Created by Yana on 05/06/2017.
  */
-public interface IFrameCallBack {
+public interface FrameCallBack {
     void removeJLabel();
 
     void boundJLabel(int direction, int n);
@@ -18,11 +18,13 @@ public interface IFrameCallBack {
 
     void destroyOpponentShips(int i, int j, int condition);
 
-    String getMyName();
+//    String getMyName();
 
     void setOpponentName(String username);
 
     String getOpponentName();
 
     void loose();
+
+    void win(int i);
 }

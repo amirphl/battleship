@@ -1,5 +1,6 @@
 package ir.aut.test.view.second;
 
+import ir.aut.test.head.Connector;
 import ir.aut.test.logic.MessageManager;
 
 import javax.swing.*;
@@ -7,16 +8,15 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import static ir.aut.test.view.Constants.HEIGHT_OF_FRAME;
-import static ir.aut.test.view.Constants.WIDTH_OF_FRAME;
-import static ir.aut.test.view.Constants.WIDTH_OF_ORDERINGJPANEL;
+import static ir.aut.test.view.Constants.*;
 
 /**
  * Created by Yana on 05/06/2017.
  */
-public class ChatJFrame extends JPanel implements IChatJFrameCallBack {
+public class ChatBox extends JPanel implements ChatBoxCallBack {
 
-    private MessageManager messageManager;
+    //    private MessageManager messageManager;
+    private Connector connector;
     private String opponentName;
     private JScrollPane scrollPane;
     private ChatJPanel chatJPanel;
@@ -25,13 +25,15 @@ public class ChatJFrame extends JPanel implements IChatJFrameCallBack {
     private JTextField textField;
     private Font font = new Font("SanSerif", Font.PLAIN, 18);
 
-    public ChatJFrame(MessageManager messageManager, String opponentName) {
-        this.messageManager = messageManager;
+    public ChatBox(Connector connector, String opponentName) {
+        this.connector = connector;
         this.opponentName = opponentName;
-        messageManager.setiChatJFrameCallBack(this);
+//        messageManager.setChatBoxCallBack(this);
+        connector.setChatBoxCallBack(this);
         setLayout(null);
 //        setSize(new Dimension(WIDTH_OF_FRAME - WIDTH_OF_ORDERINGJPANEL - 1, HEIGHT_OF_FRAME - 40));
         setBounds(WIDTH_OF_ORDERINGJPANEL + 1, 0, WIDTH_OF_FRAME - WIDTH_OF_ORDERINGJPANEL - 20, HEIGHT_OF_FRAME - 40);
+//        paintOpponentName();
 
         textField = new JTextField("Type here ...");
         textField.setBounds(5, HEIGHT_OF_FRAME - 120, 260, 30);
@@ -58,6 +60,7 @@ public class ChatJFrame extends JPanel implements IChatJFrameCallBack {
     }
 
     public void paintOpponentName(String opponentName) {
+        this.opponentName = opponentName;
         textArea = new JTextArea("Chat to " + opponentName);
         textArea.setBounds(1, 1, 200, 25);
         textArea.setBorder(BorderFactory.createLineBorder(Color.BLACK));
@@ -82,7 +85,9 @@ public class ChatJFrame extends JPanel implements IChatJFrameCallBack {
             new Thread() {
                 public void run() {
                     addText(e.getActionCommand(), 1);
-                    messageManager.sendConversation(e.getActionCommand());
+                    connector.setConversationMessage(e.getActionCommand());
+                    connector.sendMessage("SendConversationMessage");
+//                    messageManager.sendConversation(e.getActionCommand());
                     textField.setText(" ");
                     revalidate();
                 }

@@ -20,9 +20,9 @@ public class ConnectionModeFrame extends JFrame {
     private JRadioButton host;
     private JRadioButton guest;
     private ButtonGroup buttonGroup;
-    private String opponentPort;
-    private String playerPort;
-    private String opponentIp;
+    private String opponentPort = "5000";
+    private String playerPort = "5000";
+    private String opponentIp = "127.0.0.1";
     private JButton start;
     private JButton exit;
     private Font font;
@@ -91,7 +91,7 @@ public class ConnectionModeFrame extends JFrame {
         setVisible(true);
     }
 
-    private void fillP(int n) {
+    private void fillP(int n) throws NumberFormatException {
         switch (n) {
             case 0:
                 p = Integer.valueOf(playerPort);
@@ -173,6 +173,7 @@ public class ConnectionModeFrame extends JFrame {
                     } else {
                         setVisible(false);
                         dispose();
+                        System.exit(0);
                     }
                 }
             }.start();

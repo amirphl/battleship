@@ -1,5 +1,6 @@
 package ir.aut.test.view.first;
 
+import ir.aut.test.head.Connector;
 import ir.aut.test.head.ManagerInterface;
 import ir.aut.test.logic.MessageManager;
 
@@ -7,29 +8,35 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 /**
  * Created by Yana on 22/06/2017.
  */
-public class WaitingJFrame extends JFrame implements IWaitingJFrameCallBack {
+public class WaitingJFrame extends JFrame implements WaitingJFrameCallBack {
 
     private ManagerInterface manager;
-    private MessageManager messageManager;
+    private Connector connector;
     private JTextArea textArea;
     private JButton cancel;
+    private int window = 0;
 
-    public WaitingJFrame(ManagerInterface manager, MessageManager messageManager) {
+    public WaitingJFrame(ManagerInterface manager, Connector connector) {
         this.manager = manager;
-        this.messageManager = messageManager;
-        messageManager.setIWaitingJFrameCallBack(this);
+        this.connector = connector;
+
+        connector.setWaitingJFrameCallBack(this);
+
         setLayout(null);
         setResizable(false);
-        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+//        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setTitle("Please Wait ...");
         setSize(400, 150);
         setLocation(600, 400);
+        addWindowListener(new WindowHandler());
         textArea = new JTextArea("Waiting for the host to join ...");
         textArea.setFont(new Font("SanSerif", Font.PLAIN, 18));
         textArea.setBackground(Color.YELLOW);
@@ -43,7 +50,7 @@ public class WaitingJFrame extends JFrame implements IWaitingJFrameCallBack {
         cancel.setFont(new Font("SanSerif", Font.PLAIN, 16));
         cancel.addActionListener(new Handler());
         add(cancel);
-        revalidate();
+//        revalidate();
         setVisible(true);
     }
 
@@ -52,28 +59,74 @@ public class WaitingJFrame extends JFrame implements IWaitingJFrameCallBack {
         public void actionPerformed(ActionEvent e) {
             new Thread() {
                 public void run() {
-                    setVisible(false);
-                    dispose();
-                    try {
-                        messageManager.sendRequestLeave(InetAddress.getLocalHost().getHostAddress());
-                    } catch (UnknownHostException e1) {
-                        e1.printStackTrace();
-                    }
-                    System.exit(0);
+                    leave();
                 }
             }.start();
         }
     }
 
+    private class WindowHandler implements WindowListener {
+
+        @Override
+        public void windowOpened(WindowEvent e) {
+        }
+
+        @Override
+        public void windowClosing(WindowEvent e) {
+            if (window == 0) {
+                leave();
+            }
+        }
+
+        @Override
+        public void windowClosed(WindowEvent e) {
+
+        }
+
+        @Override
+        public void windowIconified(WindowEvent e) {
+
+        }
+
+        @Override
+        public void windowDeiconified(WindowEvent e) {
+
+        }
+
+        @Override
+        public void windowActivated(WindowEvent e) {
+
+        }
+
+        @Override
+        public void windowDeactivated(WindowEvent e) {
+
+        }
+    }
+
     @Override
     public void close(int i) {
-        setVisible(false);
-        dispose();
+        window = 1;
         if (i == 1)
             manager.startGameC();
         else {
             JOptionPane.showMessageDialog(null, "You are rejected by Opponent(Server). try again.", "REJECTED", JOptionPane.ERROR_MESSAGE);
             System.exit(0);
         }
+        setVisible(false);
+        dispose();
+    }
+
+    private void leave() {
+        try {
+            connector.setIp(InetAddress.getLocalHost().getHostAddress());
+            connector.sendMessage("LeaveBeforeAccept");
+//            messageManager.sendRequestLeave(InetAddress.getLocalHost().getHostAddress());
+        } catch (UnknownHostException e1) {
+            e1.printStackTrace();
+        }
+        setVisible(false);
+        dispose();
+        System.exit(0);
     }
 }
