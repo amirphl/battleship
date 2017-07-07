@@ -1,12 +1,20 @@
 package ir.aut.test.view.second;
 
 import ir.aut.test.head.Connector;
-import ir.aut.test.logic.MessageManager;
+import ir.aut.test.model.MyFileWriter;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import static ir.aut.test.view.Constants.*;
 
@@ -18,6 +26,7 @@ public class ChatBox extends JPanel implements ChatBoxCallBack {
     //    private MessageManager messageManager;
     private Connector connector;
     private String opponentName;
+    private String myName;
     private JScrollPane scrollPane;
     private ChatJPanel chatJPanel;
 
@@ -25,9 +34,12 @@ public class ChatBox extends JPanel implements ChatBoxCallBack {
     private JTextField textField;
     private Font font = new Font("SanSerif", Font.PLAIN, 18);
 
-    public ChatBox(Connector connector, String opponentName) {
+    private MyFileWriter myFileWriter;
+
+    public ChatBox(Connector connector, String opponentName, String myName) {
         this.connector = connector;
         this.opponentName = opponentName;
+        this.myName = myName;
 //        messageManager.setChatBoxCallBack(this);
         connector.setChatBoxCallBack(this);
         setLayout(null);
@@ -70,12 +82,18 @@ public class ChatBox extends JPanel implements ChatBoxCallBack {
         textArea.setDisabledTextColor(Color.BLACK);
         textArea.setBackground(Color.YELLOW);
         add(textArea);
+        myFileWriter = new MyFileWriter(myName, opponentName);
         repaint();
     }
 
     @Override
     public void addText(String text, int player) {
         chatJPanel.addText(text, player);
+        new Thread() {
+            public void run() {
+                myFileWriter.write(text, player);
+            }
+        }.start();
     }
 
     private class Handler implements ActionListener {

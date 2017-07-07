@@ -2,6 +2,8 @@ package ir.aut.test.view.second;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import static ir.aut.test.view.Constants.*;
 
@@ -24,9 +26,20 @@ public class MenuJPanel extends JPanel {
         helpMenu.setFont(TEXT_FONT);
         menuBar.add(fileMenu);
         menuBar.add(helpMenu);
-//        JMenuItem newAction = new JMenuItem("New");
-//        newAction.setBackground(Color.GRAY);
-//        newAction.setFont(font);
-//        fileMenu.add(newAction);
+        JMenuItem menuItem = new JMenuItem("History");
+        fileMenu.add(menuItem);
+        menuItem.addActionListener(new Handler());
+    }
+
+    private class Handler implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            JFrame frame = new JFrame("Conversations History");
+            frame.setLocation(800, 400);
+            frame.setSize(new Dimension(300, 600));
+            frame.add(new HistoryJPanel());
+            frame.setVisible(true);
+        }
     }
 }

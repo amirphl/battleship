@@ -206,10 +206,10 @@ public class ShipsJPanel extends JPanel implements ShipsJPanelCallBack {
                 public void run() {
                     if (e.getSource() == readyButton) {
                         if (e.getActionCommand().equals("Ready")) {
-//                            if (numberOfUsedShips != 10) {
-//                                JOptionPane.showMessageDialog(null, "Put all ships in the map.", "Error", JOptionPane.ERROR_MESSAGE);
-//                                return;
-//                            }
+                            if (numberOfUsedShips != 10) {
+                                JOptionPane.showMessageDialog(null, "Put all ships in the map.", "Error", JOptionPane.ERROR_MESSAGE);
+                                return;
+                            }
                             readyButton.setText("Cancel");
                         } else if (e.getActionCommand().equals("Cancel"))
                             readyButton.setText("Ready");
@@ -222,7 +222,6 @@ public class ShipsJPanel extends JPanel implements ShipsJPanelCallBack {
                             connector.sendMessage("SendReadinessCondition");
 //                            messageManager.sendReadinessCondition(false);
                         } else {
-                            System.out.println(isOpponentReady());
                             isEditing = false;
                             isReady = true;
                             isInterrupted = false;

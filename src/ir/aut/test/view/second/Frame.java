@@ -66,7 +66,7 @@ public class Frame extends JLayeredPane implements MouseMotionListener, FrameCal
 
         orderingJPanel = new OrderingJPanel(mySquares, "Please Arrange your Field.");
         shipsJPanel = new ShipsJPanel(this, connector);
-        chatBox = new ChatBox(connector, opponentName);
+        chatBox = new ChatBox(connector, opponentName, myName);
 
         add(orderingJPanel, 0);
         add(shipsJPanel, 0);
@@ -225,7 +225,6 @@ public class Frame extends JLayeredPane implements MouseMotionListener, FrameCal
     public void setOpponentName(String username) {
         opponentName = username;
         chatBox.paintOpponentName(opponentName);
-        repaint();
     }
 
     @Override
