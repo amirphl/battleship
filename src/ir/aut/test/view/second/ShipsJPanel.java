@@ -1,5 +1,6 @@
 package ir.aut.test.view.second;
 
+import com.sun.corba.se.impl.protocol.giopmsgheaders.KeyAddr;
 import ir.aut.test.head.Connector;
 import ir.aut.test.logic.MessageManager;
 
@@ -8,6 +9,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
 
@@ -92,10 +95,12 @@ public class ShipsJPanel extends JPanel implements ShipsJPanelCallBack {
             rotateButton.setOpaque(true);
 
             rotateButton.setEnabled(false);
+            rotateButton.setFocusable(true);
+            rotateButton.addKeyListener(new MyKeyListener());
 
             resetButton.setToolTipText("For Reset , Press me");
             readyButton.setToolTipText("To start , Press me");
-            rotateButton.setToolTipText("To Rotate rectangle , Press me");
+            rotateButton.setToolTipText("To Rotate rectangle , Press me or click Alt+r");
             resetButton.addActionListener(handler);
             readyButton.addActionListener(handler);
             rotateButton.addActionListener(handler);
@@ -270,6 +275,17 @@ public class ShipsJPanel extends JPanel implements ShipsJPanelCallBack {
                     repaint();
                 }
             }.start();
+        }
+    }
+
+    private class MyKeyListener extends KeyAdapter {
+        @Override
+        public void keyTyped(KeyEvent e) {
+            if (e.getKeyCode() == KeyEvent.VK_ALT) {
+                System.out.println("done");
+                if (isEditing)
+                    rotateButton();
+            }
         }
     }
 

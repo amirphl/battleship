@@ -12,6 +12,8 @@ public interface FrameCallBack {
 
     void startGame();
 
+    void check();
+
     void setMyTurn(boolean bool);
 
     void destroyMyShips(int i, int j);

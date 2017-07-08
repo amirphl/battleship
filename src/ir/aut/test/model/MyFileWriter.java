@@ -21,6 +21,7 @@ public class MyFileWriter {
     private File path;
     private JSONArray cList;
     private JSONArray playerList;
+    private DateFormat dateFormat;
 
     public MyFileWriter(String myName, String opponentName) {
         this.myName = myName;
@@ -38,6 +39,8 @@ public class MyFileWriter {
     }
 
     public void write(String m, int player) {
+        dateFormat = new SimpleDateFormat("HH:mm:ss");
+        m = m + "\n" + dateFormat.format(new Date());
         obj = new JSONObject();
         cList.add(m);
         if (player == 1) {
@@ -49,7 +52,7 @@ public class MyFileWriter {
         obj.put("1", cList);
         obj.put("2", playerList);
 
-        DateFormat dateFormat = new SimpleDateFormat("(yyyy-MM-dd)-HH:mm:ss");
+        dateFormat = new SimpleDateFormat("(yyyy-MM-dd)-HH:mm:ss");
         Date date = new Date();
         obj.put("3", dateFormat.format(date));
 

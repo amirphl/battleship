@@ -17,6 +17,8 @@ public class Square {
     private String text = " ";
     private boolean isFill = false;
     private boolean isDestroyed = false;
+    private boolean isHarizontallyChecked = false;
+    private boolean isVerticallyChecked = false;
 
     public Square(int id, int mX, int mY) {
         this.id = id;
@@ -89,5 +91,21 @@ public class Square {
 
     public boolean isDestroyed() {
         return isDestroyed;
+    }
+
+    public boolean isHarizontallyChecked() {
+        return isHarizontallyChecked;
+    }
+
+    public boolean isVerticallyChecked() {
+        return isVerticallyChecked;
+    }
+
+    public void setHarizontallyChecked(boolean b) {
+        isHarizontallyChecked = b;
+    }
+
+    public void setVerticallyChecked(boolean b) {
+        isVerticallyChecked = b;
     }
 }

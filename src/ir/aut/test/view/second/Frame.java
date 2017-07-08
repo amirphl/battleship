@@ -139,6 +139,7 @@ public class Frame extends JLayeredPane implements MouseMotionListener, FrameCal
         isMatchStarted = true;
         removeJLabel();
         new Terminator().start();
+        check();
         if (station.equals(SERVER))
             setMyTurn(true);
         else
@@ -146,19 +147,55 @@ public class Frame extends JLayeredPane implements MouseMotionListener, FrameCal
     }
 
     @Override
+    public void check() {
+        new Thread() {
+            public void run() {
+                int cnt = 0;
+                while (true) {
+                    for (int i = 0; i < LEN; i++) {
+                        for (int j = 0; j < LEN; j++) {
+                            if (mySquares[i][j].isDestroyed() && !mySquares[i][j].isHarizontallyChecked()) {
+                                cnt++;
+                                mySquares[i][j].setHarizontallyChecked(true);
+                                try {
+                                    if (mySquares[i][j + 1].isFill() && !mySquares[i][j + 1].isDestroyed()) {
+                                        for (int k = 0; k < cnt; k++) {
+                                            mySquares[i][j - k].setHarizontallyChecked(false);
+                                        }
+                                        cnt = 0;
+                                        break;
+                                    }
+                                } catch (NullPointerException e) {
+//                                    System.out.println("Exception in check method");
+                                } catch (ArrayIndexOutOfBoundsException e) {
+//                                    System.out.println("Exception in check method");
+                                }
+                            }
+                        }
+                        if (cnt != 0) {
+                            shipsJPanel.destroy(cnt, 1);
+                            cnt = 0;
+                        }
+                    }
+                }
+            }
+        }.start();
+    }
+
+    @Override
     public void destroyMyShips(int i, int j) {
         try {
             connector.setmX(i);
             connector.setmY(j);
-            if (mySquares[i][j].isFill()) {
+            if (mySquares[i][j].isDestroyed()) {
+                connector.setCondition(2);
+                connector.sendMessage("SendLocation");
+//                messageManager.sendLocation(i, j, 2);
+            } else if (mySquares[i][j].isFill()) {
                 mySquares[i][j].destroy();
                 connector.setCondition(1);
                 connector.sendMessage("SendLocation");
 //                messageManager.sendLocation(i, j, 1);
-            } else if (mySquares[i][j].isDestroyed()) {
-                connector.setCondition(2);
-                connector.sendMessage("SendLocation");
-//                messageManager.sendLocation(i, j, 2);
             } else {
                 mySquares[i][j].setText("#");
                 connector.setCondition(0);
