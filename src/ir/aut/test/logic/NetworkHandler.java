@@ -2,6 +2,7 @@ package ir.aut.test.logic;
 
 import ir.aut.test.logic.messages.*;
 
+import java.io.IOException;
 import java.net.Socket;
 import java.net.SocketAddress;
 import java.util.LinkedList;
@@ -16,10 +17,10 @@ public class NetworkHandler extends Thread {
     private Queue<byte[]> mReceivedQueue;
     private ReceivedMessageConsumer mConsumerThread;
     private INetworkHandlerCallback iNetworkHandlerCallback;
-    private final int MAXIMUM_SIZE = 300;
+    private final int MAXIMUM_SIZE = 100;
     private boolean flag = true;
 
-    public NetworkHandler(SocketAddress socketAddress, INetworkHandlerCallback iNetworkHandlerCallback) {
+    public NetworkHandler(SocketAddress socketAddress, INetworkHandlerCallback iNetworkHandlerCallback) throws IOException {
         mTcpChannel = new TcpChannel(socketAddress, 100);
         this.iNetworkHandlerCallback = iNetworkHandlerCallback;
         createQueues();
@@ -77,7 +78,7 @@ public class NetworkHandler extends Thread {
      * Try to read some bytes from the channel.
      */
     private byte[] readChannel() {
-        return mTcpChannel.read(MAXIMUM_SIZE);
+        return mTcpChannel.read();
     }
 
     private class ReceivedMessageConsumer extends Thread {
@@ -142,6 +143,7 @@ public class NetworkHandler extends Thread {
                         sleep(100);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
+                        break;
                     }
                 }
             }

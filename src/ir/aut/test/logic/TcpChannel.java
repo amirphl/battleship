@@ -1,14 +1,17 @@
 package ir.aut.test.logic;
 
-import javax.swing.*;
+import com.sun.deploy.util.ArrayUtil;
+import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.ArrayUtilsTest;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.net.SocketAddress;
 import java.net.SocketException;
+import java.nio.ByteBuffer;
 
-import static ir.aut.test.view.Constants.CLIENT;
 
 /**
  * Created by Yana on 03/06/2017.
@@ -18,19 +21,15 @@ public class TcpChannel {
     private OutputStream mOutputStream;
     private InputStream mInputStream;
 
-    public TcpChannel(SocketAddress socketAddress, int timeout) {
-        try {
-            System.out.println("Client :client trying to join.");
-            mSocket = new Socket();
-            mSocket.connect(socketAddress);
-            setTimeOut(timeout);
-            System.out.println("Client :client connected to server.");
-            getStreams();
-        } catch (IOException e) {
-            JOptionPane.showMessageDialog(null, "Port or IP is incorrect.", "Error", JOptionPane.ERROR_MESSAGE);
-            System.exit(0);
-        }
+    public TcpChannel(SocketAddress socketAddress, int timeout) throws IOException {
+        System.out.println("Client :client trying to join.");
+        mSocket = new Socket();
+        mSocket.connect(socketAddress);
+        setTimeOut(timeout);
+        System.out.println("Client :client connected to server.");
+        getStreams();
     }
+
 
     public TcpChannel(Socket socket, int timeout) {
         mSocket = socket;
@@ -58,15 +57,26 @@ public class TcpChannel {
     /**
      * Try to read specific count from input stream.
      */
-    public byte[] read(final int count) {
-        byte[] a = new byte[count];
+    public byte[] read() {
+        byte[] a = new byte[4];
+        byte[] b;
+        byte[] c;
         try {
             mInputStream.read(a);
+            ByteBuffer byteBuffer = ByteBuffer.wrap(a);
+            int size = byteBuffer.getInt();
+            b = new byte[size - 4];
+            mInputStream.read(b);
+            c = join2Array(a, b);
         } catch (IOException e) {
 //            e.printStackTrace();
             return null;
         }
-        return a;
+        return c;
+    }
+
+    private byte[] join2Array(byte[] a, byte[] b) {
+        return ArrayUtils.addAll(a, b);
     }
 
     /**

@@ -8,6 +8,8 @@ import ir.aut.test.view.second.FrameCallBack;
 import ir.aut.test.view.second.ShipsJPanelCallBack;
 import ir.aut.test.view.second.ChatBoxCallBack;
 
+import javax.swing.*;
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +27,7 @@ public class MessageManager implements ServerSocketHandler.IServerSocketHandlerC
     private List<NetworkHandler> mNetworkHandlerList;
     private int index = 0;
     private Connector connector;
+
 //    private FrameCallBack iFrameCallBack;
 //    private ShipsJPanelCallBack shipsJPanelCallBack;
 //    private ChatBoxCallBack chatBoxCallBack;
@@ -43,7 +46,7 @@ public class MessageManager implements ServerSocketHandler.IServerSocketHandlerC
     /**
      * Instantiate a network handler and start it. (Call this constructor in guest mode)
      */
-    public MessageManager(String ip, int port) {
+    public MessageManager(String ip, int port) throws IOException {
         mNetworkHandlerList = new ArrayList<>();
         NetworkHandler networkHandler = new NetworkHandler(new InetSocketAddress(ip, port), this);
         mNetworkHandlerList.add(networkHandler);

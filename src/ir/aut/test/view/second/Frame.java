@@ -122,6 +122,7 @@ public class Frame extends JLayeredPane implements MouseMotionListener, FrameCal
                 jLabel.setBounds(0, 0, SIDE_LENGTH, n * SIDE_LENGTH);
                 break;
         }
+        repaint();
     }
 
     @Override
@@ -148,38 +149,38 @@ public class Frame extends JLayeredPane implements MouseMotionListener, FrameCal
 
     @Override
     public void check() {
-        new Thread() {
-            public void run() {
-                int cnt = 0;
-                while (true) {
-                    for (int i = 0; i < LEN; i++) {
-                        for (int j = 0; j < LEN; j++) {
-                            if (mySquares[i][j].isDestroyed() && !mySquares[i][j].isHarizontallyChecked()) {
-                                cnt++;
-                                mySquares[i][j].setHarizontallyChecked(true);
-                                try {
-                                    if (mySquares[i][j + 1].isFill() && !mySquares[i][j + 1].isDestroyed()) {
-                                        for (int k = 0; k < cnt; k++) {
-                                            mySquares[i][j - k].setHarizontallyChecked(false);
-                                        }
-                                        cnt = 0;
-                                        break;
-                                    }
-                                } catch (NullPointerException e) {
-//                                    System.out.println("Exception in check method");
-                                } catch (ArrayIndexOutOfBoundsException e) {
-//                                    System.out.println("Exception in check method");
-                                }
-                            }
-                        }
-                        if (cnt != 0) {
-                            shipsJPanel.destroy(cnt, 1);
-                            cnt = 0;
-                        }
-                    }
-                }
-            }
-        }.start();
+//        new Thread() {
+//            public void run() {
+//                int cnt = 0;
+//                while (true) {
+//                    for (int i = 0; i < LEN; i++) {
+//                        for (int j = 0; j < LEN; j++) {
+//                            if (mySquares[i][j].isDestroyed() && !mySquares[i][j].isHarizontallyChecked()) {
+//                                cnt++;
+//                                mySquares[i][j].setHarizontallyChecked(true);
+//                                try {
+//                                    if (mySquares[i][j + 1].isFill() && !mySquares[i][j + 1].isDestroyed()) {
+//                                        for (int k = 0; k < cnt; k++) {
+//                                            mySquares[i][j - k].setHarizontallyChecked(false);
+//                                        }
+//                                        cnt = 0;
+//                                        break;
+//                                    }
+//                                } catch (NullPointerException e) {
+////                                    System.out.println("Exception in check method");
+//                                } catch (ArrayIndexOutOfBoundsException e) {
+////                                    System.out.println("Exception in check method");
+//                                }
+//                            }
+//                        }
+//                        if (cnt != 0) {
+//                            shipsJPanel.destroy(cnt, 1);
+//                            cnt = 0;
+//                        }
+//                    }
+//                }
+//            }
+//        }.start();
     }
 
     @Override

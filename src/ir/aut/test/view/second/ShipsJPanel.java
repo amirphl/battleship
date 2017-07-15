@@ -97,6 +97,7 @@ public class ShipsJPanel extends JPanel implements ShipsJPanelCallBack {
             rotateButton.setEnabled(false);
             rotateButton.setFocusable(true);
             rotateButton.addKeyListener(new MyKeyListener());
+            rotateButton.setMnemonic(KeyEvent.VK_R);
 
             resetButton.setToolTipText("For Reset , Press me");
             readyButton.setToolTipText("To start , Press me");
@@ -281,11 +282,16 @@ public class ShipsJPanel extends JPanel implements ShipsJPanelCallBack {
     private class MyKeyListener extends KeyAdapter {
         @Override
         public void keyTyped(KeyEvent e) {
-            if (e.getKeyCode() == KeyEvent.VK_ALT) {
-                System.out.println("done");
-                if (isEditing)
-                    rotateButton();
-            }
+            new Thread() {
+                public void run() {
+                    if (e.getKeyCode() == KeyEvent.VK_R) {
+                        System.out.println("done");
+                        if (isEditing)
+                            rotateButton();
+                        repaint();
+                    }
+                }
+            }.start();
         }
     }
 

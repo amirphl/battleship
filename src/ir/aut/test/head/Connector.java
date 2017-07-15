@@ -15,8 +15,7 @@ import static ir.aut.test.view.Constants.SERVER;
  */
 public class Connector {
 
-    private MessageManager clientMessageManager;
-    private MessageManager serverMessageManager;
+    private MessageManager messageManager;
 
     private FrameCallBack frameCallBack;
     private ShipsJPanelCallBack shipsJPanelCallBack;
@@ -36,15 +35,8 @@ public class Connector {
     private boolean readinessCondition;
     private String conversationMessage;
 
-    public Connector(MessageManager mM, String s) {
-        switch (s) {
-            case SERVER:
-                serverMessageManager = mM;
-                break;
-            case CLIENT:
-                clientMessageManager = mM;
-                break;
-        }
+    public Connector(MessageManager mM) {
+        messageManager = mM;
     }
 
     public void setFrameCallBack(FrameCallBack fcb) {
@@ -134,28 +126,28 @@ public class Connector {
      * user(client)
      */
     private void leaveBeforeAccept() {
-        clientMessageManager.sendRequestLeave(ip);
+        messageManager.sendRequestLeave(ip);
     }
 
     /**
      * user(client)
      */
     private void sendClientIpToServer() {
-        clientMessageManager.sendIP(playerName, ip);
+        messageManager.sendIP(playerName, ip);
     }
 
     /**
      * user(server)
      */
     private void accept() {
-        serverMessageManager.acceptRequest(i);
+        messageManager.acceptRequest(i);
     }
 
     /**
      * user(server)
      */
     private void reject() {
-        serverMessageManager.rejectRequest(i);
+        messageManager.rejectRequest(i);
     }
 
     /**
@@ -184,11 +176,7 @@ public class Connector {
      * server  to client
      */
     private void sendMyName() {
-        if (station.equals(SERVER)) {
-            serverMessageManager.sendMyName(playerName);
-        } else {
-            clientMessageManager.sendMyName(playerName);
-        }
+        messageManager.sendMyName(playerName);
     }
 
     private void consumeOpponentName() {
@@ -196,11 +184,7 @@ public class Connector {
     }
 
     private void sendLocation() {
-        if (station.equals(SERVER)) {
-            serverMessageManager.sendLocation(mX, mY, condition);
-        } else {
-            clientMessageManager.sendLocation(mX, mY, condition);
-        }
+        messageManager.sendLocation(mX, mY, condition);
     }
 
     private void consumeLocationMessage() {
@@ -211,11 +195,7 @@ public class Connector {
     }
 
     private void sendTerminateMessage() {
-        if (station.equals(SERVER)) {
-            serverMessageManager.sendTerminate(terminateCondition);
-        } else {
-            clientMessageManager.sendTerminate(terminateCondition);
-        }
+        messageManager.sendTerminate(terminateCondition);
     }
 
     private void consumeTerminateMessage() {
@@ -226,19 +206,12 @@ public class Connector {
     }
 
     private void closeConnection() {
-        if (station.equals(SERVER)) {
-            serverMessageManager.onSocketClosed();
-        } else {
-            clientMessageManager.onSocketClosed();
-        }
+        messageManager.onSocketClosed();
+
     }
 
     private void sendReadinessCondition() {
-        if (station.equals(SERVER)) {
-            serverMessageManager.sendReadinessCondition(readinessCondition);
-        } else {
-            clientMessageManager.sendReadinessCondition(readinessCondition);
-        }
+        messageManager.sendReadinessCondition(readinessCondition);
     }
 
     private void consumeReadinessCondition() {
@@ -246,11 +219,8 @@ public class Connector {
     }
 
     private void sendConversationMessage() {
-        if (station.equals(SERVER)) {
-            serverMessageManager.sendConversation(conversationMessage);
-        } else {
-            clientMessageManager.sendConversation(conversationMessage);
-        }
+        messageManager.sendConversation(conversationMessage);
+
     }
 
     private void consumeConversationMessage() {
