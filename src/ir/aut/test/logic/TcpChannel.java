@@ -1,6 +1,5 @@
 package ir.aut.test.logic;
 
-import com.sun.deploy.util.ArrayUtil;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang3.ArrayUtilsTest;
 

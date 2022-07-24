@@ -1,6 +1,5 @@
 package ir.aut.test.view.second;
 
-import com.sun.corba.se.impl.protocol.giopmsgheaders.KeyAddr;
 import ir.aut.test.head.Connector;
 import ir.aut.test.logic.MessageManager;
 
