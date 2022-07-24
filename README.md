@@ -1,14 +1,14 @@
 # Battleship (multiplayer)
-This is the implementation of the [Battleship game](https://en.wikipedia.org/wiki/Battleship_(game)) as part of the final project of Advanced Programming course in the university.  
-The source codes is written in Java and utilizes socket programming, multithreading, and Swing.
+This is the implementation of the [Battleship game](https://en.wikipedia.org/wiki/Battleship_(game)) as part of the final project of the Advanced Programming course at the university.  
+The source code is written in Java and utilizes socket programming, multithreading, and Swing.
 
 ## Demo
 ![demo](demo.gif)
 
 ### Features
 - multiplayer
-    - Make sure to allocated a **free** port for the server.
-    - Open the port in firewall before establishing the server. i.e, Make sure that the server is accessible from client.
+    - Make sure to allocate a **free** port for the server.
+    - Open the port in the firewall before establishing the server. i.e, Make sure that the server is accessible from the client.
     - You can check it by ```netcat``` command line tool.
 - chat service
     - Two players can send and receive messages.
@@ -23,23 +23,23 @@ super simple:
     - ```./lib/```: external libraries are here.
     - ```-d ./out/```: Specifies the output directory.
     - ```./src/ir/aut/test/head/Main.java```: This is the path to the Main class.
-- Make sure that there exists a folder with name **./ConversationsHistory/** in the current directory. If doesn't exists, create one.
+- Make sure that there exists a folder with the name **./ConversationsHistory/** in the current directory. If it doesn't exist, create one.
 - Run the game: ```java -cp ./out/:./lib/* ir.aut.test.head.Main```
 
 ### TODO
-- Resolve ExpectationJFrame while closing panel.
-- Notify name of the player joined after ReceivedConnectionsFrame.
-- Display name and IP of the players.
+- Resolve ExpectationJFrame while closing the panel.
+- Notify the name of the player who joined after ReceivedConnectionsFrame.
+- Display the name and IP of the players.
 - Implement hotkeys.
-- Down part of the ships jpanel can be improved.
-- What happens if there exist no jpanel (I have deleted all panel or no one joined)?
+- Down part of the ship's jpanel can be improved.
+- What happens if there exists no jpanel (I have deleted the panel or no one joined.)?
 - Which one to use? repaint or revalidate?
 - Notify if the client got rejected by the server.
-- Implement scroll bar.
+- Implement the scroll bar.
 - Handle incorrect IP.
 - Write Java doc.
-- Some implementation is missed from the last page of definition of project.
-- Extract Jar file.
+- Some implementation is missed from the last page of the definition of the project.
+- Extract the Jar file.
 - OrderingJPanel, menuPanel
 - ChatJPanel, file
 - ShipsJpanel and leaveButton -----> destroy
