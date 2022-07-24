@@ -23,7 +23,7 @@ public class HistoryJPanel extends JPanel {
     }
 
     private void addConversation() {
-        File f = new File("d:\\ConversationsHistory");
+        File f = new File("./ConversationsHistory/");
         ArrayList<File> files = new ArrayList<File>(Arrays.asList(f.listFiles()));
         for (File fi : files) {
             cJPanel.addButton(fi);

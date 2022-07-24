@@ -30,8 +30,8 @@ public class MyFileWriter {
     }
 
     private void createPath() {
-        int i = new File("d:\\ConversationsHistory").listFiles().length;
-        path = new File("d:\\ConversationsHistory\\" + "chat" + (++i) + "-to-" + opponentName + ".json");
+        int i = new File("./ConversationsHistory/").listFiles().length;
+        path = new File("./ConversationsHistory/" + "chat" + (++i) + "-to-" + opponentName + ".json");
         cList = new JSONArray();
         playerList = new JSONArray();
         cList.add(myName);
