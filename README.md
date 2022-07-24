@@ -3,7 +3,8 @@ This is the implementation of the [Battleship game](https://en.wikipedia.org/wik
 The source code is written in Java and utilizes socket programming, multithreading, and Swing.
 
 ## Demo
-![demo](demo.gif)
+![demo](demo.gif)  
+Please refer to the instructions in the `How to run?` section since these are a little bit changed!
 
 ### Features
 - multiplayer
@@ -18,13 +19,13 @@ The source code is written in Java and utilizes socket programming, multithreadi
 super simple:
 - Install JDK: ```sudo apt install openjdk-11-jdk```
 - (optional) run: ```ldd /usr/lib/jvm/java-11-openjdk-amd64/lib/libawt_xawt.so```
-- Compile the project through command line: ```javac -cp ./src/:./lib/* -d ./out/ ./src/ir/aut/test/head/Main.java```
+- Compile the project through command line: ```javac -cp ./src/:./lib/* -d ./out/ ./src/ir/aut/main/head/Main.java```
     - ```./src/```: source files are here!
     - ```./lib/```: external libraries are here.
     - ```-d ./out/```: Specifies the output directory.
-    - ```./src/ir/aut/test/head/Main.java```: This is the path to the Main class.
+    - ```./src/ir/aut/main/head/Main.java```: This is the path to the Main class.
 - Make sure that there exists a folder with the name **./ConversationsHistory/** in the current directory. If it doesn't exist, create one.
-- Run the game: ```java -cp ./out/:./lib/* ir.aut.test.head.Main```
+- Run the game: ```java -cp ./out/:./lib/* ir.aut.main.head.Main```
 
 ### TODO
 - Resolve ExpectationJFrame while closing the panel.
